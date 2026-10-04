@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="bn">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>নির্ঝর লাইব্রেরী</title>
+
+    <style>
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        #loading {
+            text-align: center;
+            font-size: 18px;
+            margin-top: 30px;
+        }
+
+        #message {
+            text-align: center;
+            font-size: 18px;
+            margin-top: 30px;
+            color: red;
+        }
+
+        .products {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+
+        .product-card img {
+            width: 100%;
+            height: 220px;
+            object-fit: contain;
+            border-radius: 8px;
+            background: #f8f8f8;
+        }
+
+        .product-card h2 {
+            margin: 12px 0 8px;
+            font-size: 22px;
+        }
+
+        .product-id {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .mrp {
+            text-decoration: line-through;
+            color: #777;
+        }
+
+        .discount {
+            color: red;
+        }
+
+        .selling-price {
+            color: green;
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .stock {
+            margin-top: 8px;
+            font-weight: bold;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 15px;
+            border: none;
+            border-radius: 7px;
+            background: #007bff;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+
+        button:disabled {
+            background: #999;
+            cursor: not-allowed;
+        }
+
+        .detail-box {
+            background: white;
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+
+        .detail-box img {
+            width: 100%;
+            max-height: 400px;
+            object-fit: contain;
+            background: #f8f8f8;
+            border-radius: 10px;
+        }
+
+        .detail-box h2 {
+            font-size: 28px;
+        }
+
+        .payment-buttons {
+            display: none;
+            margin-top: 10px;
+        }
+
+        .online {
+            background: green;
+        }
+
+        .online:hover {
+            background: darkgreen;
+        }
+
+        .offline {
+            background: orange;
+        }
+
+        .offline:hover {
+            background: darkorange;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+    <h1>নির্ঝর লাইব্রেরী</h1>
+
+    <div id="loading">
+        পণ্য লোড হচ্ছে...
+    </div>
+
+    <div id="message"></div>
+
+    <div id="products" class="products"></div>
+
+    <div id="detail"></div>
+
+
+    <script type="module">
+
+        // =====================================
+        // Firebase Import
+        // =====================================
+
+        import { initializeApp }
+            from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+
+        import {
+            getFirestore,
+            collection,
+            getDocs,
+            doc,
+            updateDoc,
+            increment
+        }
+            from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
+
+
+        // =====================================
+        // Firebase Configuration
+        // =====================================
+
+        const firebaseConfig = {
+
+            apiKey: "AIzaSyCY7V8_MgILkg4yAauiqzKZ3Uo3w_o_B4",
+
+            authDomain:
+                "nirjhor-library.firebaseapp.com",
+
+            projectId:
+                "nirjhor-library",
+
+            storageBucket:
+                "nirjhor-library.firebasestorage.app",
+
+            messagingSenderId:
+                "771313980493",
+
+            appId:
+                "1:771313980493:web:ff76cbd83d88e102fd7804",
+
+            measurementId:
+                "G-213SK9BK75"
+        };
+
+
+        // Firebase চালু
+
+        const app = initializeApp(firebaseConfig);
+
+        const db = getFirestore(app);
+
+
+        // =====================================
+        // HTML Elements
+        // =====================================
+
+        const productsDiv =
+            document.getElementById("products");
+
+        const loadingDiv =
+            document.getElementById("loading");
+
+        const messageDiv =
+            document.getElementById("message");
+
+        const detailDiv =
+            document.getElementById("detail");
+
+
+        // =====================================
+        // URL থেকে Product ID নেওয়া
+        // =====================================
+
+        const urlParams =
+            new URLSearchParams(
+                window.location.search
+            );
+
+        const requestedProductId =
+            urlParams.get("id")?.trim();
+
+
+        // =====================================
+        // সব Product Firebase থেকে Load
+        // =====================================
+
+        async function loadProducts() {
+
+            try {
+
+                const querySnapshot =
+                    await getDocs(
+                        collection(db, "products")
+                    );
+
+
+                loadingDiv.style.display =
+                    "none";
+
+
+                let products = [];
+
+
+                // =================================
+                // Firebase-এর প্রতিটি Product
+                // =================================
+
+                querySnapshot.forEach(
+                    (docSnapshot) => {
+
+                        const product =
+                            docSnapshot.data();
+
+
+                        products.push({
+
+                            ...product,
+
+                            // Firebase Document ID
+                            firestoreId:
+                                docSnapshot.id
+
+                        });
+
+                    }
+                );
+
+
+                // =================================
+                // URL-এ ?id= থাকলে
+                // =================================
+
+                if (requestedProductId) {
+
+
+                    /*
+                       Product খোঁজার সময়
+                       Document ID অথবা
+                       productId—দুটোই দেখা হবে।
+                    */
+
+                    const product =
+                        products.find(
+                            p =>
+
+                                String(
+                                    p.productId || ""
+                                ).trim() ===
+                                requestedProductId
+
+                                ||
+
+                                String(
+                                    p.firestoreId || ""
+                                ).trim() ===
+                                requestedProductId
+                        );
+
+
+                    // =================================
+                    // Product পাওয়া যায়নি
+                    // =================================
+
+                    if (!product) {
+
+                        messageDiv.innerHTML =
+
+                            `
+                            <h3>
+                                দুঃখিত!
+                            </h3>
+
+                            <p>
+                                Product ID:
+                                <strong>
+                                    ${requestedProductId}
+                                </strong>
+
+                                এর কোনো তথ্য পাওয়া যায়নি।
+                            </p>
+                            `;
+
+                        return;
+                    }
+
+
+                    // =================================
+                    // শুধু একটি Product দেখাবে
+                    // =================================
+
+                    showSingleProduct(product);
+
+                    return;
+
+                }
+
+
+                // =================================
+                // ?id= না থাকলে সব Product
+                // =================================
+
+                if (products.length === 0) {
+
+                    messageDiv.innerHTML =
+                        "কোনো পণ্য পাওয়া যায়নি।";
+
+                    return;
+                }
+
+
+                // সব Product দেখানো
+
+                products.forEach(
+                    product => {
+
+                        createProductCard(product);
+
+                    }
+                );
+
+
+            }
+
+            catch (error) {
+
+                console.error(
+                    "Firebase Error:",
+                    error
+                );
+
+
+                loadingDiv.style.display =
+                    "none";
+
+
+                messageDiv.innerHTML =
+
+                    `
+                    <h3>
+                        পণ্য লোড করতে সমস্যা হয়েছে।
+                    </h3>
+
+                    <p>
+                        ${error.message}
+                    </p>
+                    `;
+
+            }
+
+        }
+
+
+        // =====================================
+        // Product Card তৈরি
+        // =====================================
+
+        function createProductCard(product) {
+
+
+            const card =
+                document.createElement("div");
+
+
+            card.className =
+                "product-card";
+
+
+            let imageHTML = "";
+
+
+            if (product.image) {
+
+                imageHTML =
+
+                    `
+                    <img
+                        src="${product.image}"
+                        alt="${product.productName || "Product"}"
+                    >
+                    `;
+
+            }
+
+            else {
+
+                imageHTML =
+
+                    `
+                    <div
+                        style="
+                            height:220px;
+                            display:flex;
+                            align-items:center;
+                            justify-content:center;
+                            background:#eee;
+                        "
+                    >
+                        ছবি নেই
+                    </div>
+                    `;
+
+            }
+
+
+            card.innerHTML =
+
+                `
+
+                ${imageHTML}
+
+                <h2>
+                    ${product.productName || "পণ্যের নাম নেই"}
+                </h2>
+
+                <div class="product-id">
+
+                    Product ID:
+
+                    ${product.productId ||
+                      product.firestoreId}
+
+                </div>
+
+
+                <div>
+
+                    MRP:
+
+                    <span class="mrp">
+
+                        ৳${product.mrp || 0}
+
+                    </span>
+
+                </div>
+
+
+                <div class="discount">
+
+                    Discount:
+
+                    ৳${product.discount || 0}
+
+                </div>
+
+
+                <div class="selling-price">
+
+                    ৳${product.sellingPrice || 0}
+
+                </div>
+
+
+                <div class="stock">
+
+                    Stock:
+
+                    ${product.stock || 0}
+
+                </div>
+
+
+                <button>
+
+                    বিস্তারিত / কিনুন
+
+                </button>
+
+                `;
+
+
+            const button =
+                card.querySelector("button");
+
+
+            button.addEventListener(
+                "click",
+                () => {
+
+
+                    const id =
+                        product.productId ||
+                        product.firestoreId;
+
+
+                    window.location.href =
+                        "product1.html?id=" +
+                        encodeURIComponent(id);
+
+                }
+            );
+
+
+            productsDiv.appendChild(card);
+
+        }
+
+
+        // =====================================
+        // Single Product দেখানো
+        // =====================================
+
+        function showSingleProduct(product) {
+
+
+            productsDiv.innerHTML = "";
+
+            messageDiv.innerHTML = "";
+
+
+            let imageHTML = "";
+
+
+            if (product.image) {
+
+                imageHTML =
+
+                    `
+                    <img
+                        src="${product.image}"
+                        alt="${product.productName || "Product"}"
+                    >
+                    `;
+
+            }
+
+            else {
+
+                imageHTML =
+
+                    `
+                    <div
+                        style="
+                            height:300px;
+                            display:flex;
+                            align-items:center;
+                            justify-content:center;
+                            background:#eee;
+                        "
+                    >
+                        ছবি নেই
+                    </div>
+                    `;
+
+            }
+
+
+            detailDiv.innerHTML =
+
+                `
+
+                <div class="detail-box">
+
+                    ${imageHTML}
+
+
+                    <h2>
+
+                        ${product.productName ||
+                          "পণ্যের নাম নেই"}
+
+                    </h2>
+
+
+                    <p>
+
+                        <strong>
+                            Product ID:
+                        </strong>
+
+                        ${product.productId ||
+                          product.firestoreId}
+
+                    </p>
+
+
+                    <p>
+
+                        <strong>
+                            MRP:
+                        </strong>
+
+                        <span class="mrp">
+
+                            ৳${product.mrp || 0}
+
+                        </span>
+
+                    </p>
+
+
+                    <p class="discount">
+
+                        <strong>
+                            Discount:
+                        </strong>
+
+                        ৳${product.discount || 0}
+
+                    </p>
+
+
+                    <p class="selling-price">
+
+                        বিক্রয় মূল্য:
+
+                        ৳${product.sellingPrice || 0}
+
+                    </p>
+
+
+                    <p class="stock">
+
+                        Stock:
+
+                        ${product.stock || 0}
+
+                    </p>
+
+
+                    <button id="buyButton">
+
+                        কিনতে চান
+
+                    </button>
+
+
+                    <div
+                        id="paymentButtons"
+                        class="payment-buttons"
+                    >
+
+                        <button
+                            id="onlineButton"
+                            class="online"
+                        >
+
+                            Online Payment
+
+                        </button>
+
+
+                        <button
+                            id="offlineButton"
+                            class="offline"
+                        >
+
+                            Offline Payment
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+                `;
+
+
+            const buyButton =
+                document.getElementById(
+                    "buyButton"
+                );
+
+
+            const paymentButtons =
+                document.getElementById(
+                    "paymentButtons"
+                );
+
+
+            const onlineButton =
+                document.getElementById(
+                    "onlineButton"
+                );
+
+
+            const offlineButton =
+                document.getElementById(
+                    "offlineButton"
+                );
+
+
+            // =================================
+            // Stock 0 হলে
+            // =================================
+
+            if (
+                Number(product.stock || 0) <= 0
+            ) {
+
+                buyButton.disabled =
+                    true;
+
+                buyButton.innerText =
+                    "স্টক শেষ";
+
+            }
+
+
+            // =================================
+            // Buy Button
+            // =================================
+
+            buyButton.addEventListener(
+                "click",
+                () => {
+
+                    paymentButtons.style.display =
+                        "block";
+
+                    buyButton.style.display =
+                        "none";
+
+                }
+            );
+
+
+            // =================================
+            // Online Payment
+            // =================================
+
+            onlineButton.addEventListener(
+                "click",
+                async () => {
+
+
+                    const paymentSuccess =
+                        confirm(
+                            "Online Payment সফল হয়েছে কি?"
+                        );
+
+
+                    if (!paymentSuccess) {
+
+                        return;
+
+                    }
+
+
+                    await completePurchase(
+                        product
+                    );
+
+                }
+            );
+
+
+            // =================================
+            // Offline Payment
+            // =================================
+
+            offlineButton.addEventListener(
+                "click",
+                async () => {
+
+
+                    const pin =
+                        prompt(
+                            "দোকানের PIN দিন:"
+                        );
+
+
+                    // Test PIN
+
+                    if (pin !== "1234") {
+
+                        alert(
+                            "ভুল PIN!"
+                        );
+
+                        return;
+
+                    }
+
+
+                    await completePurchase(
+                        product
+                    );
+
+                }
+            );
+
+        }
+
+
+        // =====================================
+        // Purchase Complete
+        // =====================================
+
+        async function completePurchase(
+            product
+        ) {
+
+            try {
+
+
+                if (
+                    Number(product.stock || 0)
+                    <= 0
+                ) {
+
+                    alert(
+                        "দুঃখিত, এই পণ্যটি স্টকে নেই।"
+                    );
+
+                    return;
+
+                }
+
+
+                /*
+                    এখানে Firebase-এর
+                    Document ID ব্যবহার করা হচ্ছে।
+                */
+
+                const productDocumentId =
+                    product.firestoreId ||
+                    product.productId;
+
+
+                await updateDoc(
+
+                    doc(
+                        db,
+                        "products",
+                        productDocumentId
+                    ),
+
+                    {
+                        stock:
+                            increment(-1)
+                    }
+
+                );
+
+
+                alert(
+                    "ক্রয় সফল হয়েছে!"
+                );
+
+
+                // নতুন Stock দেখাবে
+
+                location.reload();
+
+            }
+
+            catch (error) {
+
+                console.error(
+                    "Purchase Error:",
+                    error
+                );
+
+
+                alert(
+                    "ক্রয় সম্পন্ন করতে সমস্যা হয়েছে।"
+                );
+
+            }
+
+        }
+
+
+        // =====================================
+        // Website চালু
+        // =====================================
+
+        loadProducts();
+
+    </script>
+
+</body>
+
+</html>
