@@ -1,32 +1,488 @@
 <!DOCTYPE html>
 <html lang="bn">
+
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
     <title>নির্ঝর লাইব্রেরী</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f4f6f8;
+        }
+
+        header {
+            text-align: center;
+            background: white;
+            padding: 25px 15px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+        }
+
+        header h1 {
+            margin: 0 0 8px;
+        }
+
+        header p {
+            margin: 0;
+            color: #666;
+        }
+
+        main {
+            max-width: 1100px;
+            margin: auto;
+        }
+
+        .search-box {
+            margin-bottom: 20px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 13px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .products {
+            display: grid;
+            grid-template-columns:
+                repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .product-card {
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+        }
+
+        .product-card img {
+            width: 100%;
+            height: 220px;
+            object-fit: contain;
+            background: #f5f5f5;
+            border-radius: 8px;
+        }
+
+        .product-card h3 {
+            margin: 12px 0 8px;
+        }
+
+        .product-id {
+            color: #666;
+            font-size: 13px;
+        }
+
+        .mrp {
+            color: #777;
+        }
+
+        .selling-price {
+            color: green;
+            font-size: 21px;
+            font-weight: bold;
+        }
+
+        .discount {
+            color: #dc3545;
+        }
+
+        .buy-btn {
+            width: 100%;
+            margin-top: 12px;
+            padding: 12px;
+            border: none;
+            border-radius: 7px;
+            background: #007bff;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .buy-btn:hover {
+            background: #0056b3;
+        }
+
+        #loading {
+            text-align: center;
+            padding: 30px;
+        }
+
+        #noProducts {
+            text-align: center;
+            padding: 30px;
+            color: #777;
+            display: none;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 35px;
+            color: #777;
+        }
+
+    </style>
+
 </head>
+
 
 <body>
 
     <header>
-        <h1>নির্ঝর লাইব্রেরী</h1>
-        <p>আপনার প্রয়োজনীয় পণ্য এক জায়গায়</p>
-    </header>
 
-    <main>
-        <h2>পণ্যের তথ্য দেখতে QR Code স্ক্যান করুন</h2>
+        <h1>নির্ঝর লাইব্রেরী</h1>
 
         <p>
-            প্রতিটি পণ্যের QR Code স্ক্যান করে
-            পণ্যের মূল্য, ছাড় এবং অন্যান্য তথ্য দেখুন।
+            আপনার প্রয়োজনীয় পণ্য এক জায়গায়
         </p>
 
-        <button>পণ্য কিনুন</button>
+    </header>
+
+
+    <main>
+
+        <h2>
+            আমাদের পণ্যসমূহ
+        </h2>
+
+
+        <div class="search-box">
+
+            <input
+                type="text"
+                id="searchInput"
+                placeholder="পণ্যের নাম বা Product ID দিয়ে খুঁজুন..."
+            >
+
+        </div>
+
+
+        <div id="loading">
+            পণ্য লোড হচ্ছে...
+        </div>
+
+
+        <div
+            id="products"
+            class="products"
+        ></div>
+
+
+        <div id="noProducts">
+            কোনো পণ্য পাওয়া যায়নি।
+        </div>
+
     </main>
 
+
     <footer>
-        <p>© 2026 নির্ঝর লাইব্রেরী</p>
+
+        <p>
+            © 2026 নির্ঝর লাইব্রেরী
+        </p>
+
     </footer>
 
+
+    <script type="module">
+
+        import {
+            initializeApp
+        }
+        from
+        "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+
+
+        import {
+            getFirestore,
+            collection,
+            getDocs
+        }
+        from
+        "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
+
+
+        const firebaseConfig = {
+
+            apiKey:
+                "AIzaSyCY7V8_MgILkg4yAauiqzKZ3Uo3w_o_B4",
+
+            authDomain:
+                "nirjhor-library.firebaseapp.com",
+
+            projectId:
+                "nirjhor-library",
+
+            storageBucket:
+                "nirjhor-library.firebasestorage.app",
+
+            messagingSenderId:
+                "771313980493",
+
+            appId:
+                "1:771313980493:web:ff76cbd83d88e102fd7804",
+
+            measurementId:
+                "G-213SK9BK75"
+
+        };
+
+
+        const app =
+            initializeApp(firebaseConfig);
+
+
+        const db =
+            getFirestore(app);
+
+
+        let products = [];
+
+
+        const productsDiv =
+            document.getElementById("products");
+
+
+        const loading =
+            document.getElementById("loading");
+
+
+        const noProducts =
+            document.getElementById("noProducts");
+
+
+        const searchInput =
+            document.getElementById("searchInput");
+
+
+        async function loadProducts() {
+
+            try {
+
+                const snapshot =
+                    await getDocs(
+                        collection(
+                            db,
+                            "products"
+                        )
+                    );
+
+
+                products = [];
+
+
+                snapshot.forEach(
+                    docSnapshot => {
+
+                        products.push({
+
+                            ...docSnapshot.data(),
+
+                            firestoreId:
+                                docSnapshot.id
+
+                        });
+
+                    }
+                );
+
+
+                loading.style.display =
+                    "none";
+
+
+                displayProducts();
+
+            }
+
+            catch (error) {
+
+                console.error(error);
+
+                loading.innerText =
+                    "পণ্য লোড করতে সমস্যা হয়েছে।";
+
+            }
+
+        }
+
+
+        function displayProducts() {
+
+            productsDiv.innerHTML = "";
+
+
+            const search =
+                searchInput.value
+                .trim()
+                .toLowerCase();
+
+
+            const filtered =
+                products.filter(
+                    product => {
+
+                        const name =
+                            String(
+                                product.productName || ""
+                            ).toLowerCase();
+
+
+                        const id =
+                            String(
+                                product.productId ||
+                                product.firestoreId ||
+                                ""
+                            ).toLowerCase();
+
+
+                        return (
+                            name.includes(search) ||
+                            id.includes(search)
+                        );
+
+                    }
+                );
+
+
+            if (filtered.length === 0) {
+
+                noProducts.style.display =
+                    "block";
+
+                return;
+
+            }
+
+
+            noProducts.style.display =
+                "none";
+
+
+            filtered.forEach(
+                product => {
+
+                    const card =
+                        document.createElement("div");
+
+
+                    card.className =
+                        "product-card";
+
+
+                    const image =
+                        product.image
+                        ? `
+                            <img
+                                src="${product.image}"
+                                alt="${product.productName || ""}"
+                            >
+                          `
+                        : `
+                            <div style="
+                                height:220px;
+                                display:flex;
+                                align-items:center;
+                                justify-content:center;
+                                background:#eee;
+                                border-radius:8px;
+                            ">
+                                ছবি নেই
+                            </div>
+                          `;
+
+
+                    card.innerHTML = `
+
+                        ${image}
+
+                        <h3>
+                            ${product.productName || "পণ্যের নাম নেই"}
+                        </h3>
+
+                        <p class="product-id">
+                            Product ID:
+                            <strong>
+                                ${product.productId || product.firestoreId}
+                            </strong>
+                        </p>
+
+                        <p class="mrp">
+                            MRP:
+                            ৳${product.mrp || 0}
+                        </p>
+
+                        <p class="discount">
+                            Discount:
+                            ৳${product.discount || 0}
+                        </p>
+
+                        <p class="selling-price">
+                            ৳${product.sellingPrice || 0}
+                        </p>
+
+                        <p>
+                            Stock:
+                            <strong>
+                                ${product.stock || 0}
+                            </strong>
+                        </p>
+
+                        <button
+                            class="buy-btn"
+                            onclick="buyProduct('${product.productId || product.firestoreId}')"
+                        >
+                            কিনতে চাই
+                        </button>
+
+                    `;
+
+
+                    productsDiv.appendChild(card);
+
+                }
+            );
+
+        }
+
+
+        searchInput.addEventListener(
+            "input",
+            displayProducts
+        );
+
+
+        window.buyProduct =
+            function(id) {
+
+                window.location.href =
+                    "product1.html?id=" +
+                    encodeURIComponent(id);
+
+            };
+
+
+        loadProducts();
+
+    </script>
+
+
 </body>
+
 </html>
