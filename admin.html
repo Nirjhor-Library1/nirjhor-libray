@@ -42,7 +42,7 @@ th{background:#edf3fb}
 .order{border:1px solid #dce2eb;padding:14px;border-radius:8px;margin:12px 0;background:white}
 .order h3{overflow-wrap:anywhere}
 .order ul{padding-left:22px}
-.order li{margin:5px 0}
+.order li{margin:7px 0}
 .navbar{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px}
 .navbar button{flex:1;min-width:125px;margin:0;padding:12px 8px}
 .navbar button.active{background:#09264c;outline:2px solid #8cb9f0}
@@ -54,6 +54,10 @@ th{background:#edf3fb}
 .order-editor{background:#f3f6fb;padding:12px;border-radius:8px;margin-top:12px}
 .editor-item{border:1px solid #dce2eb;background:white;padding:10px;border-radius:7px;margin:8px 0}
 .editor-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
+.order-summary{background:#f3f6fb;border-radius:7px;padding:12px;margin:12px 0}
+.order-summary p{margin:7px 0}
+.profit{color:#16804a;font-weight:bold}
+.loss{color:#bd2636;font-weight:bold}
 .empty{padding:18px;text-align:center;color:#596579;background:#fff;border-radius:8px}
 @media(max-width:520px){
  body{padding:0 8px 15px}
@@ -96,47 +100,36 @@ th{background:#edf3fb}
 
 <section id="loginSection" class="card">
   <h2>Admin Login</h2>
-  <label for="adminPassword">পাসওয়ার্ড</label>
+  <label>পাসওয়ার্ড</label>
   <input id="adminPassword" type="password" placeholder="Admin password">
   <button id="loginButton">Login</button>
   <p id="loginMessage"></p>
 </section>
 
 <main id="adminSection" class="hidden">
-
-  <nav class="navbar" id="mainNavigation">
+  <nav class="navbar">
     <button type="button" data-view="home">🏠 হোম</button>
-    <button type="button" data-view="pending">⏳ অপেক্ষমান অর্ডার <span id="navPendingCount">0</span></button>
-    <button type="button" data-view="confirmed">✅ নিশ্চিত অর্ডার <span id="navConfirmedCount">0</span></button>
-    <button type="button" data-view="cancelled">❌ বাতিল অর্ডার <span id="navCancelledCount">0</span></button>
+    <button type="button" data-view="pending">⏳ অপেক্ষমান <span id="navPendingCount">0</span></button>
+    <button type="button" data-view="confirmed">✅ নিশ্চিত <span id="navConfirmedCount">0</span></button>
+    <button type="button" data-view="cancelled">❌ বাতিল <span id="navCancelledCount">0</span></button>
   </nav>
 
-  <!-- HOME -->
   <section id="homeView">
     <div class="grid">
       <button type="button" class="stat stat-button" data-view="products">
         মোট পণ্য<strong id="totalProducts">0</strong>
         <span class="small">পণ্য তালিকা খুলুন →</span>
       </button>
-
-      <div class="stat">
-        মোট স্টক<strong id="totalStock">0</strong>
-      </div>
-
-      <div class="stat">
-        স্টকের ক্রয়মূল্য<strong id="totalPurchaseValue">৳0</strong>
-      </div>
-
+      <div class="stat">মোট স্টক<strong id="totalStock">0</strong></div>
+      <div class="stat">স্টকের ক্রয়মূল্য<strong id="totalPurchaseValue">৳0</strong></div>
       <button type="button" class="stat stat-button" data-view="pending">
         অপেক্ষমান অর্ডার<strong id="pendingCount">0</strong>
         <span class="small">অর্ডার দেখুন →</span>
       </button>
-
       <button type="button" class="stat stat-button" data-view="confirmed">
         নিশ্চিত অর্ডার<strong id="confirmedCount">0</strong>
         <span class="small">অর্ডার দেখুন →</span>
       </button>
-
       <button type="button" class="stat stat-button" data-view="cancelled">
         বাতিল অর্ডার<strong id="cancelledCount">0</strong>
         <span class="small">অর্ডার দেখুন →</span>
@@ -147,32 +140,23 @@ th{background:#edf3fb}
       <h2 id="formTitle">নতুন পণ্য যোগ করুন</h2>
       <form id="productForm">
         <input id="editFirestoreId" type="hidden">
-
         <label>Product ID</label>
         <input id="productId" placeholder="যেমন NL-0001" required>
-
         <label>পণ্যের নাম</label>
-        <input id="productName" placeholder="পণ্যের নাম" required>
-
+        <input id="productName" required>
         <label>পণ্যের ছবি</label>
         <input id="productImage" type="file" accept="image/*">
         <img id="imagePreview" class="product-image hidden" alt="Product preview">
-
-        <label>ক্রয়মূল্য (প্রতি পিস) — শুধু অ্যাডমিনের জন্য</label>
+        <label>ক্রয়মূল্য (প্রতি পিস)</label>
         <input id="purchasePrice" type="number" min="0" step="0.01" required>
-
         <label>MRP / মূল দাম</label>
         <input id="mrp" type="number" min="0" step="0.01" required>
-
         <label>পণ্যের ছাড়</label>
         <input id="discount" type="number" min="0" step="0.01" value="0" required>
-
         <label>বিক্রয়মূল্য</label>
         <input id="sellingPrice" type="number" readonly>
-
         <label>স্টক</label>
         <input id="stock" type="number" min="0" step="1" required>
-
         <button type="submit" id="saveButton">পণ্য সংরক্ষণ</button>
         <button type="button" id="cancelButton" class="secondary">ফর্ম পরিষ্কার</button>
       </form>
@@ -180,7 +164,7 @@ th{background:#edf3fb}
 
     <div class="card">
       <h2>QR Code A4 প্রিন্ট</h2>
-      <p class="small">পণ্য নির্বাচন করে প্রতিটির কপি সংখ্যা নির্ধারণ করুন।</p>
+      <p class="small">পণ্য নির্বাচন করে কপি সংখ্যা নির্ধারণ করুন।</p>
       <div id="qrProductList"></div>
       <p>মোট QR কপি: <strong id="qrCopyCount">0</strong></p>
       <button type="button" id="printQrButton">নির্বাচিত QR প্রিন্ট</button>
@@ -188,14 +172,12 @@ th{background:#edf3fb}
     </div>
   </section>
 
-  <!-- ALL PRODUCTS -->
   <section id="productsView" class="hidden">
     <div class="card">
       <div class="view-title">
         <button type="button" class="secondary" data-view="home">🏠 হোম</button>
         <h2>সব পণ্য</h2>
       </div>
-      <p class="small">এখান থেকে পণ্য Edit, Delete ও QR Download করতে পারবেন।</p>
       <input id="productSearch" placeholder="পণ্যের নাম বা Product ID দিয়ে খুঁজুন">
       <div class="table-wrap">
         <table>
@@ -209,7 +191,6 @@ th{background:#edf3fb}
     </div>
   </section>
 
-  <!-- ORDERS -->
   <section id="ordersView" class="hidden">
     <div class="card">
       <div class="view-title">
@@ -220,977 +201,652 @@ th{background:#edf3fb}
       <div id="ordersList"></div>
     </div>
   </section>
-
 </main>
 
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+import {initializeApp} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
 import {
-  getFirestore, collection, getDocs, doc, setDoc, addDoc,
-  deleteDoc, runTransaction, serverTimestamp
+ getFirestore,collection,getDocs,doc,setDoc,addDoc,
+ deleteDoc,runTransaction,serverTimestamp
 } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyCY7V8_MgILkg4yAauiqzKZ3Uo3w_o_B4",
-  authDomain: "nirjhor-library.firebaseapp.com",
-  projectId: "nirjhor-library",
-  storageBucket: "nirjhor-library.firebasestorage.app",
-  messagingSenderId: "771313980493",
-  appId: "1:771313980493:web:ff76cbd83d88e102fd7804",
-  measurementId: "G-213SK9BK75"
+const firebaseConfig={
+ apiKey:"AIzaSyCY7V8_MgILkg4yAauiqzKZ3Uo3w_o_B4",
+ authDomain:"nirjhor-library.firebaseapp.com",
+ projectId:"nirjhor-library",
+ storageBucket:"nirjhor-library.firebasestorage.app",
+ messagingSenderId:"771313980493",
+ appId:"1:771313980493:web:ff76cbd83d88e102fd7804",
+ measurementId:"G-213SK9BK75"
 };
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const $ = id => document.getElementById(id);
+const app=initializeApp(firebaseConfig);
+const db=getFirestore(app);
+const $=id=>document.getElementById(id);
+const SESSION_KEY="nirjhorAdminAuthTime";
+const SESSION_MS=600000;
 
-const SESSION_KEY = "nirjhorAdminAuthTime";
-const SESSION_MS = 600000;
+let products=[];
+let orders=[];
+let selectedImage="";
+let sessionTimer=null;
+let currentView="home";
+let editingOrderId=null;
 
-let products = [];
-let orders = [];
-let selectedImage = "";
-let sessionTimer = null;
-let currentView = "home";
-let editingOrderId = null;
+const money=n=>"৳"+Number(n||0).toLocaleString("en-BD",{maximumFractionDigits:2});
+const safe=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 
-const money = n => "৳" + Number(n || 0).toLocaleString("en-BD", {
-  maximumFractionDigits: 2
+function sessionValid(){
+ const t=Number(localStorage.getItem(SESSION_KEY));
+ return Number.isFinite(t)&&t>0&&Date.now()-t<SESSION_MS;
+}
+function lockAdmin(){
+ clearTimeout(sessionTimer);
+ localStorage.removeItem(SESSION_KEY);
+ $("adminSection").classList.add("hidden");
+ $("loginSection").classList.remove("hidden");
+ $("logoutButton").classList.add("hidden");
+ $("headerHome").classList.add("hidden");
+ $("adminPassword").value="";
+ $("loginMessage").textContent="সেশনের সময় শেষ হয়েছে। আবার লগইন করুন।";
+}
+function armSessionExpiry(){
+ clearTimeout(sessionTimer);
+ const t=Number(localStorage.getItem(SESSION_KEY));
+ const remaining=SESSION_MS-(Date.now()-t);
+ if(!sessionValid()||remaining<=0){lockAdmin();return;}
+ sessionTimer=setTimeout(lockAdmin,remaining);
+}
+function startSession(){
+ localStorage.setItem(SESSION_KEY,String(Date.now()));
+ armSessionExpiry();
+}
+
+function showView(view){
+ if(!sessionValid()){lockAdmin();return;}
+ currentView=view;
+ editingOrderId=null;
+ $("homeView").classList.toggle("hidden",view!=="home");
+ $("productsView").classList.toggle("hidden",view!=="products");
+ $("ordersView").classList.toggle("hidden",!["pending","confirmed","cancelled"].includes(view));
+ const headings={pending:"⏳ অপেক্ষমান অর্ডার",confirmed:"✅ নিশ্চিত অর্ডার",cancelled:"❌ বাতিল অর্ডার"};
+ if(headings[view]){$("ordersHeading").textContent=headings[view];renderOrders();}
+ document.querySelectorAll("[data-view]").forEach(b=>b.classList.toggle("active",b.dataset.view===view));
+ if(view==="products")displayProducts();
+ window.scrollTo(0,0);
+}
+document.querySelectorAll("[data-view]").forEach(b=>b.addEventListener("click",()=>showView(b.dataset.view)));
+$("brandHome").addEventListener("click",e=>{
+ e.preventDefault();
+ if(!sessionValid()){if(!$("adminSection").classList.contains("hidden"))lockAdmin();return;}
+ showView("home");
 });
+$("headerHome").addEventListener("click",()=>showView("home"));
 
-const safe = s => String(s ?? "").replace(/[&<>"']/g, c => ({
-  "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
-}[c]));
-
-function sessionValid() {
-  const t = Number(localStorage.getItem(SESSION_KEY));
-  return Number.isFinite(t) && t > 0 && Date.now() - t < SESSION_MS;
-}
-
-function lockAdmin() {
-  clearTimeout(sessionTimer);
-  localStorage.removeItem(SESSION_KEY);
-  $("adminSection").classList.add("hidden");
-  $("loginSection").classList.remove("hidden");
-  $("logoutButton").classList.add("hidden");
-  $("headerHome").classList.add("hidden");
-  $("adminPassword").value = "";
-  $("loginMessage").textContent = "সেশনের সময় শেষ হয়েছে। আবার লগইন করুন।";
-}
-
-function armSessionExpiry() {
-  clearTimeout(sessionTimer);
-  const t = Number(localStorage.getItem(SESSION_KEY));
-  const remaining = SESSION_MS - (Date.now() - t);
-
-  if (!sessionValid() || remaining <= 0) {
-    lockAdmin();
-    return;
-  }
-
-  sessionTimer = setTimeout(lockAdmin, remaining);
-}
-
-function startSession() {
-  localStorage.setItem(SESSION_KEY, String(Date.now()));
+async function openAdmin(){
+ if(!sessionValid()){lockAdmin();return;}
+ $("loginSection").classList.add("hidden");
+ $("adminSection").classList.remove("hidden");
+ $("logoutButton").classList.remove("hidden");
+ $("headerHome").classList.remove("hidden");
+ showView("home");
+ armSessionExpiry();
+ try{
+  await Promise.all([loadProducts(),loadOrders()]);
+  if(!sessionValid()){lockAdmin();return;}
   armSessionExpiry();
+ }catch(e){console.error(e);alert("ডেটা লোড হয়নি। Firebase Rules ও ইন্টারনেট পরীক্ষা করুন।");}
 }
-
-function showView(view) {
-  if (!sessionValid()) {
-    lockAdmin();
-    return;
-  }
-
-  currentView = view;
-  editingOrderId = null;
-
-  $("homeView").classList.toggle("hidden", view !== "home");
-  $("productsView").classList.toggle("hidden", view !== "products");
-  $("ordersView").classList.toggle(
-    "hidden",
-    !["pending","confirmed","cancelled"].includes(view)
-  );
-
-  const headings = {
-    pending: "⏳ অপেক্ষমান অর্ডার",
-    confirmed: "✅ নিশ্চিত অর্ডার",
-    cancelled: "❌ বাতিল অর্ডার"
-  };
-
-  if (headings[view]) {
-    $("ordersHeading").textContent = headings[view];
-    renderOrders();
-  }
-
-  document.querySelectorAll("[data-view]").forEach(button => {
-    button.classList.toggle("active", button.dataset.view === view);
-  });
-
-  if (view === "products") displayProducts();
-
-  window.scrollTo(0,0);
-}
-
-document.querySelectorAll("[data-view]").forEach(button => {
-  button.addEventListener("click", () => showView(button.dataset.view));
+$("loginButton").addEventListener("click",async()=>{
+ if($("adminPassword").value==="Rakibul82#"){
+  startSession();$("loginMessage").textContent="";await openAdmin();
+ }else $("loginMessage").textContent="ভুল পাসওয়ার্ড!";
 });
+$("adminPassword").addEventListener("keydown",e=>{if(e.key==="Enter")$("loginButton").click();});
+$("logoutButton").addEventListener("click",lockAdmin);
 
-$("brandHome").addEventListener("click", e => {
-  e.preventDefault();
-  if (!sessionValid()) {
-    if (!$("adminSection").classList.contains("hidden")) lockAdmin();
-    return;
-  }
-  showView("home");
-});
-
-$("headerHome").addEventListener("click", () => showView("home"));
-
-async function openAdmin() {
-  if (!sessionValid()) {
-    lockAdmin();
-    return;
-  }
-
-  $("loginSection").classList.add("hidden");
-  $("adminSection").classList.remove("hidden");
-  $("logoutButton").classList.remove("hidden");
-  $("headerHome").classList.remove("hidden");
-
-  showView("home");
-  armSessionExpiry();
-
-  try {
-    await Promise.all([loadProducts(),loadOrders()]);
-
-    if (!sessionValid()) {
-      lockAdmin();
-      return;
-    }
-
-    armSessionExpiry();
-  } catch (e) {
-    console.error(e);
-    alert("ডেটা লোড হয়নি। Firebase Rules ও ইন্টারনেট পরীক্ষা করুন।");
-  }
+async function loadProducts(){
+ const snap=await getDocs(collection(db,"products"));
+ products=snap.docs.map(d=>({...d.data(),firestoreId:d.id}));
+ displayProducts();updateDashboard();renderQrProducts();
+}
+async function loadOrders(){
+ const snap=await getDocs(collection(db,"orders"));
+ orders=snap.docs.map(d=>({...d.data(),firestoreId:d.id}));
+ updateDashboard();renderOrders();
+}
+function statusOf(o){
+ const s=String(o.status||o.orderStatus||"pending").toLowerCase();
+ if(["confirmed","confirm","complete","completed","delivered"].includes(s))return "confirmed";
+ if(["cancelled","canceled","cancel"].includes(s))return "cancelled";
+ return "pending";
+}
+function updateDashboard(){
+ $("totalProducts").textContent=products.length;
+ $("totalStock").textContent=products.reduce((s,p)=>s+Number(p.stock||0),0);
+ $("totalPurchaseValue").textContent=money(products.reduce((s,p)=>s+Number(p.stock||0)*Number(p.purchasePrice||0),0));
+ const counts={pending:0,confirmed:0,cancelled:0};
+ orders.forEach(o=>counts[statusOf(o)]++);
+ $("pendingCount").textContent=counts.pending;
+ $("confirmedCount").textContent=counts.confirmed;
+ $("cancelledCount").textContent=counts.cancelled;
+ $("navPendingCount").textContent=counts.pending;
+ $("navConfirmedCount").textContent=counts.confirmed;
+ $("navCancelledCount").textContent=counts.cancelled;
 }
 
-$("loginButton").addEventListener("click", async () => {
-  if ($("adminPassword").value === "Rakibul82#") {
-    startSession();
-    $("loginMessage").textContent = "";
-    await openAdmin();
-  } else {
-    $("loginMessage").textContent = "ভুল পাসওয়ার্ড!";
-  }
-});
-
-$("adminPassword").addEventListener("keydown", e => {
-  if (e.key === "Enter") $("loginButton").click();
-});
-
-$("logoutButton").addEventListener("click", lockAdmin);
-
-async function loadProducts() {
-  const snap = await getDocs(collection(db,"products"));
-  products = snap.docs.map(d => ({...d.data(),firestoreId:d.id}));
-  displayProducts();
-  updateDashboard();
-  renderQrProducts();
+function sellingPrice(){
+ const mrp=Number($("mrp").value||0);
+ const discount=Number($("discount").value||0);
+ $("sellingPrice").value=Math.max(0,mrp-discount);
 }
-
-async function loadOrders() {
-  const snap = await getDocs(collection(db,"orders"));
-  orders = snap.docs.map(d => ({...d.data(),firestoreId:d.id}));
-  updateDashboard();
-  renderOrders();
-}
-
-function statusOf(o) {
-  const s = String(o.status || o.orderStatus || "pending").toLowerCase();
-  if (["confirmed","confirm","complete","completed","delivered"].includes(s)) return "confirmed";
-  if (["cancelled","canceled","cancel"].includes(s)) return "cancelled";
-  return "pending";
-}
-
-function updateDashboard() {
-  $("totalProducts").textContent = products.length;
-
-  $("totalStock").textContent = products.reduce(
-    (s,p) => s + Number(p.stock || 0),0
-  );
-
-  $("totalPurchaseValue").textContent = money(products.reduce(
-    (s,p) => s + Number(p.stock || 0)*Number(p.purchasePrice || 0),0
-  ));
-
-  const pending = orders.filter(o => statusOf(o) === "pending").length;
-  const confirmed = orders.filter(o => statusOf(o) === "confirmed").length;
-  const cancelled = orders.filter(o => statusOf(o) === "cancelled").length;
-
-  $("pendingCount").textContent = pending;
-  $("confirmedCount").textContent = confirmed;
-  $("cancelledCount").textContent = cancelled;
-
-  $("navPendingCount").textContent = pending;
-  $("navConfirmedCount").textContent = confirmed;
-  $("navCancelledCount").textContent = cancelled;
-}
-
-function sellingPrice() {
-  const mrp = Number($("mrp").value || 0);
-  const discount = Number($("discount").value || 0);
-  $("sellingPrice").value = Math.max(0,mrp-discount);
-}
-
 $("mrp").addEventListener("input",sellingPrice);
 $("discount").addEventListener("input",sellingPrice);
 
-$("productImage").addEventListener("change",async e => {
-  const file = e.target.files[0];
-  if (!file) return;
-
-  if (!file.type.startsWith("image/")) {
-    alert("একটি ছবির ফাইল নির্বাচন করুন।");
-    return;
-  }
-
-  try {
-    selectedImage = await compressImage(file);
-    $("imagePreview").src = selectedImage;
-    $("imagePreview").classList.remove("hidden");
-  } catch (err) {
-    alert("ছবি লোড করা যায়নি।");
-  }
+$("productImage").addEventListener("change",async e=>{
+ const file=e.target.files[0];if(!file)return;
+ if(!file.type.startsWith("image/")){alert("একটি ছবির ফাইল নির্বাচন করুন।");return;}
+ try{
+  selectedImage=await compressImage(file);
+  $("imagePreview").src=selectedImage;
+  $("imagePreview").classList.remove("hidden");
+ }catch(err){alert("ছবি লোড করা যায়নি।");}
 });
-
-function compressImage(file) {
-  return new Promise((resolve,reject) => {
-    const reader = new FileReader();
-    reader.onerror = reject;
-
-    reader.onload = () => {
-      const img = new Image();
-      img.onerror = reject;
-
-      img.onload = () => {
-        const scale = Math.min(1,800/Math.max(img.width,img.height));
-        const canvas = document.createElement("canvas");
-        canvas.width = Math.round(img.width*scale);
-        canvas.height = Math.round(img.height*scale);
-        canvas.getContext("2d").drawImage(img,0,0,canvas.width,canvas.height);
-        resolve(canvas.toDataURL("image/jpeg",0.78));
-      };
-
-      img.src = reader.result;
-    };
-
-    reader.readAsDataURL(file);
-  });
+function compressImage(file){
+ return new Promise((resolve,reject)=>{
+  const reader=new FileReader();reader.onerror=reject;
+  reader.onload=()=>{
+   const img=new Image();img.onerror=reject;
+   img.onload=()=>{
+    const scale=Math.min(1,800/Math.max(img.width,img.height));
+    const canvas=document.createElement("canvas");
+    canvas.width=Math.round(img.width*scale);canvas.height=Math.round(img.height*scale);
+    canvas.getContext("2d").drawImage(img,0,0,canvas.width,canvas.height);
+    resolve(canvas.toDataURL("image/jpeg",0.78));
+   };
+   img.src=reader.result;
+  };
+  reader.readAsDataURL(file);
+ });
 }
-
-function clearForm() {
-  $("productForm").reset();
-  $("editFirestoreId").value = "";
-  $("formTitle").textContent = "নতুন পণ্য যোগ করুন";
-  $("saveButton").textContent = "পণ্য সংরক্ষণ";
-  $("imagePreview").classList.add("hidden");
-  $("imagePreview").src = "";
-  selectedImage = "";
-  sellingPrice();
+function clearForm(){
+ $("productForm").reset();$("editFirestoreId").value="";
+ $("formTitle").textContent="নতুন পণ্য যোগ করুন";
+ $("saveButton").textContent="পণ্য সংরক্ষণ";
+ $("imagePreview").classList.add("hidden");$("imagePreview").src="";
+ selectedImage="";sellingPrice();
 }
-
 $("cancelButton").addEventListener("click",clearForm);
 
-$("productForm").addEventListener("submit",async e => {
-  e.preventDefault();
-  if (!sessionValid()) return lockAdmin();
+$("productForm").addEventListener("submit",async e=>{
+ e.preventDefault();if(!sessionValid())return lockAdmin();
+ const productId=$("productId").value.trim();
+ const productName=$("productName").value.trim();
+ const purchasePrice=Number($("purchasePrice").value);
+ const mrp=Number($("mrp").value);
+ const discount=Number($("discount").value);
+ const stock=Number($("stock").value);
+ const firestoreId=$("editFirestoreId").value;
 
-  const productId = $("productId").value.trim();
-  const productName = $("productName").value.trim();
-  const purchasePrice = Number($("purchasePrice").value);
-  const mrp = Number($("mrp").value);
-  const discount = Number($("discount").value);
-  const stock = Number($("stock").value);
-  const firestoreId = $("editFirestoreId").value;
+ if(!productId||!productName)return alert("Product ID ও পণ্যের নাম লিখুন।");
+ if([purchasePrice,mrp,discount,stock].some(n=>!Number.isFinite(n)||n<0))return alert("দাম, ছাড় ও স্টক সঠিকভাবে লিখুন।");
+ if(!Number.isInteger(stock))return alert("স্টক পূর্ণসংখ্যায় লিখুন।");
+ if(discount>mrp)return alert("ছাড় MRP-এর চেয়ে বেশি হতে পারবে না।");
+ if(!firestoreId&&!selectedImage)return alert("নতুন পণ্যের ছবি নির্বাচন করুন।");
+ if(products.find(p=>String(p.productId).toLowerCase()===productId.toLowerCase()&&p.firestoreId!==firestoreId))return alert("এই Product ID আগে থেকেই আছে।");
 
-  if (!productId || !productName)
-    return alert("Product ID ও পণ্যের নাম লিখুন।");
-
-  if ([purchasePrice,mrp,discount,stock].some(n => !Number.isFinite(n) || n < 0))
-    return alert("দাম, ছাড় ও স্টক শূন্যের কম হতে পারবে না।");
-
-  if (!Number.isInteger(stock))
-    return alert("স্টক পূর্ণসংখ্যায় লিখুন।");
-
-  if (discount > mrp)
-    return alert("ছাড় MRP-এর চেয়ে বেশি হতে পারবে না।");
-
-  if (!firestoreId && !selectedImage)
-    return alert("নতুন পণ্যের ছবি নির্বাচন করুন।");
-
-  const duplicate = products.find(p =>
-    String(p.productId).toLowerCase() === productId.toLowerCase() &&
-    p.firestoreId !== firestoreId
-  );
-
-  if (duplicate) return alert("এই Product ID আগে থেকেই আছে।");
-
-  const old = products.find(p => p.firestoreId === firestoreId);
-
-  const data = {
-    productId,productName,purchasePrice,mrp,discount,
-    sellingPrice:mrp-discount,stock,
-    image:selectedImage || old?.image || "",
-    updatedAt:serverTimestamp()
-  };
-
-  try {
-    let id = firestoreId;
-
-    if (id) {
-      await setDoc(doc(db,"products",id),data,{merge:true});
-    } else {
-      const ref = await addDoc(collection(db,"products"),{
-        ...data,createdAt:serverTimestamp()
-      });
-      id = ref.id;
-    }
-
-    const publicData = {
-      productId,productName,mrp,discount,
-      sellingPrice:mrp-discount,stock,
-      image:data.image,updatedAt:serverTimestamp()
-    };
-
-    await setDoc(doc(db,"publicProducts",id),publicData,{merge:true});
-
-    alert("পণ্য সংরক্ষণ হয়েছে।");
-    clearForm();
-    await loadProducts();
-    showView("products");
-  } catch (err) {
-    console.error(err);
-    alert("সংরক্ষণ হয়নি। Firebase Rules পরীক্ষা করুন।");
-  }
+ const old=products.find(p=>p.firestoreId===firestoreId);
+ const data={productId,productName,purchasePrice,mrp,discount,sellingPrice:mrp-discount,stock,image:selectedImage||old?.image||"",updatedAt:serverTimestamp()};
+ try{
+  let id=firestoreId;
+  if(id)await setDoc(doc(db,"products",id),data,{merge:true});
+  else id=(await addDoc(collection(db,"products"),{...data,createdAt:serverTimestamp()})).id;
+  const publicData={productId,productName,mrp,discount,sellingPrice:mrp-discount,stock,image:data.image,updatedAt:serverTimestamp()};
+  await setDoc(doc(db,"publicProducts",id),publicData,{merge:true});
+  alert("পণ্য সংরক্ষণ হয়েছে।");clearForm();await loadProducts();showView("products");
+ }catch(err){console.error(err);alert("সংরক্ষণ হয়নি। Firebase Rules পরীক্ষা করুন।");}
 });
 
-function displayProducts() {
-  const q = $("productSearch").value.trim().toLowerCase();
-
-  const shown = products.filter(p =>
-    String(p.productName || "").toLowerCase().includes(q) ||
-    String(p.productId || "").toLowerCase().includes(q)
-  );
-
-  $("productTable").innerHTML = shown.map(p => `
-    <tr>
-      <td>${p.image ? `<img class="product-image" src="${p.image}" alt="">` : ""}</td>
-      <td>${safe(p.productId)}</td>
-      <td>${safe(p.productName)}</td>
-      <td>${money(p.purchasePrice)}</td>
-      <td>${money(p.mrp)}</td>
-      <td>${money(p.discount)}</td>
-      <td>${money(p.sellingPrice)}</td>
-      <td>${Number(p.stock || 0)}</td>
-      <td>
-        <button data-edit="${safe(p.firestoreId)}">Edit</button>
-        <button class="danger" data-delete-product="${safe(p.firestoreId)}">Delete</button>
-        <button data-qr="${safe(p.firestoreId)}">QR Download</button>
-      </td>
-    </tr>
-  `).join("") || `<tr><td colspan="9">কোনো পণ্য পাওয়া যায়নি।</td></tr>`;
+function displayProducts(){
+ const q=$("productSearch").value.trim().toLowerCase();
+ const shown=products.filter(p=>String(p.productName||"").toLowerCase().includes(q)||String(p.productId||"").toLowerCase().includes(q));
+ $("productTable").innerHTML=shown.map(p=>`
+ <tr><td>${p.image?`<img class="product-image" src="${p.image}" alt="">`:""}</td>
+ <td>${safe(p.productId)}</td><td>${safe(p.productName)}</td><td>${money(p.purchasePrice)}</td>
+ <td>${money(p.mrp)}</td><td>${money(p.discount)}</td><td>${money(p.sellingPrice)}</td><td>${Number(p.stock||0)}</td>
+ <td><button data-edit="${safe(p.firestoreId)}">Edit</button>
+ <button class="danger" data-delete-product="${safe(p.firestoreId)}">Delete</button>
+ <button data-qr="${safe(p.firestoreId)}">QR Download</button></td></tr>`).join("")||`<tr><td colspan="9">কোনো পণ্য পাওয়া যায়নি।</td></tr>`;
 }
-
 $("productSearch").addEventListener("input",displayProducts);
 
-$("productTable").addEventListener("click",async e => {
-  if (!sessionValid()) return lockAdmin();
-
-  const editId = e.target.dataset.edit;
-  const deleteId = e.target.dataset.deleteProduct;
-  const qrId = e.target.dataset.qr;
-
-  if (editId) {
-    const p = products.find(x => x.firestoreId === editId);
-    if (!p) return;
-
-    $("editFirestoreId").value = p.firestoreId;
-    $("productId").value = p.productId || "";
-    $("productName").value = p.productName || "";
-    $("purchasePrice").value = p.purchasePrice ?? 0;
-    $("mrp").value = p.mrp ?? 0;
-    $("discount").value = p.discount ?? 0;
-    $("stock").value = p.stock ?? 0;
-
-    selectedImage = p.image || "";
-
-    if (selectedImage) {
-      $("imagePreview").src = selectedImage;
-      $("imagePreview").classList.remove("hidden");
-    } else {
-      $("imagePreview").classList.add("hidden");
-    }
-
-    $("formTitle").textContent = "পণ্য সম্পাদনা করুন";
-    $("saveButton").textContent = "পরিবর্তন সংরক্ষণ";
-    sellingPrice();
-    showView("home");
-    window.scrollTo(0,0);
-  }
-
-  if (deleteId) {
-    const p = products.find(x => x.firestoreId === deleteId);
-    if (!p || !confirm(`"${p.productName}" পণ্যটি মুছে ফেলবেন?`)) return;
-
-    try {
-      await deleteDoc(doc(db,"products",deleteId));
-      await deleteDoc(doc(db,"publicProducts",deleteId));
-      await loadProducts();
-      alert("পণ্য মুছে ফেলা হয়েছে।");
-    } catch (err) {
-      console.error(err);
-      alert("পণ্য মুছে ফেলা যায়নি।");
-    }
-  }
-
-  if (qrId) {
-    const p = products.find(x => x.firestoreId === qrId);
-    if (p) downloadQr(p);
-  }
+$("productTable").addEventListener("click",async e=>{
+ if(!sessionValid())return lockAdmin();
+ const editId=e.target.dataset.edit,deleteId=e.target.dataset.deleteProduct,qrId=e.target.dataset.qr;
+ if(editId){
+  const p=products.find(x=>x.firestoreId===editId);if(!p)return;
+  $("editFirestoreId").value=p.firestoreId;$("productId").value=p.productId||"";
+  $("productName").value=p.productName||"";$("purchasePrice").value=p.purchasePrice??0;
+  $("mrp").value=p.mrp??0;$("discount").value=p.discount??0;$("stock").value=p.stock??0;
+  selectedImage=p.image||"";
+  if(selectedImage){$("imagePreview").src=selectedImage;$("imagePreview").classList.remove("hidden");}
+  else $("imagePreview").classList.add("hidden");
+  $("formTitle").textContent="পণ্য সম্পাদনা করুন";$("saveButton").textContent="পরিবর্তন সংরক্ষণ";
+  sellingPrice();showView("home");window.scrollTo(0,0);
+ }
+ if(deleteId){
+  const p=products.find(x=>x.firestoreId===deleteId);
+  if(!p||!confirm(`"${p.productName}" পণ্যটি মুছে ফেলবেন?`))return;
+  try{await deleteDoc(doc(db,"products",deleteId));await deleteDoc(doc(db,"publicProducts",deleteId));await loadProducts();alert("পণ্য মুছে ফেলা হয়েছে।");}
+  catch(err){console.error(err);alert("পণ্য মুছে ফেলা যায়নি।");}
+ }
+ if(qrId){const p=products.find(x=>x.firestoreId===qrId);if(p)downloadQr(p);}
 });
 
-function productUrl(p) {
-  return new URL("product1.html?id="+
-    encodeURIComponent(p.productId || p.firestoreId),location.href).href;
+function productUrl(p){
+ return new URL("product1.html?id="+encodeURIComponent(p.productId||p.firestoreId),location.href).href;
 }
-
-function downloadQr(p) {
-  const holder = document.createElement("div");
-  new QRCode(holder,{text:productUrl(p),width:300,height:300});
-
-  setTimeout(() => {
-    const img = holder.querySelector("img");
-    const canvas = holder.querySelector("canvas");
-    const url = img?.src || canvas?.toDataURL("image/png");
-
-    if (!url) return alert("QR তৈরি করা যায়নি।");
-
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `${p.productId || "product"}-QR.png`;
-    a.click();
-  },300);
+function downloadQr(p){
+ const holder=document.createElement("div");
+ new QRCode(holder,{text:productUrl(p),width:300,height:300});
+ setTimeout(()=>{
+  const img=holder.querySelector("img"),canvas=holder.querySelector("canvas");
+  const url=img?.src||canvas?.toDataURL("image/png");
+  if(!url)return alert("QR তৈরি করা যায়নি।");
+  const a=document.createElement("a");a.href=url;a.download=`${p.productId||"product"}-QR.png`;a.click();
+ },300);
 }
-
-function renderQrProducts() {
-  $("qrProductList").innerHTML = products.map(p => `
-    <div class="qr-select-row">
-      <input type="checkbox" data-qr-check="${safe(p.firestoreId)}">
-      <div><strong>${safe(p.productName)}</strong><br>
-        <span class="small">${safe(p.productId)}</span></div>
-      <input type="number" min="1" max="500" value="1"
-        aria-label="কপি সংখ্যা" data-qr-copies="${safe(p.firestoreId)}">
-    </div>
-  `).join("");
-
-  updateQrCopyCount();
+function renderQrProducts(){
+ $("qrProductList").innerHTML=products.map(p=>`
+ <div class="qr-select-row"><input type="checkbox" data-qr-check="${safe(p.firestoreId)}">
+ <div><strong>${safe(p.productName)}</strong><br><span class="small">${safe(p.productId)}</span></div>
+ <input type="number" min="1" max="500" value="1" aria-label="কপি সংখ্যা" data-qr-copies="${safe(p.firestoreId)}"></div>`).join("");
+ updateQrCopyCount();
 }
-
-function updateQrCopyCount() {
-  let total = 0;
-
-  document.querySelectorAll("[data-qr-check]:checked").forEach(cb => {
-    const input = document.querySelector(
-      `[data-qr-copies="${cb.dataset.qrCheck}"]`
-    );
-    total += Math.max(1,Math.min(500,Number(input?.value || 1)));
-  });
-
-  $("qrCopyCount").textContent = total;
+function updateQrCopyCount(){
+ let total=0;
+ document.querySelectorAll("[data-qr-check]:checked").forEach(cb=>{
+  const input=document.querySelector(`[data-qr-copies="${cb.dataset.qrCheck}"]`);
+  total+=Math.max(1,Math.min(500,Number(input?.value||1)));
+ });
+ $("qrCopyCount").textContent=total;
 }
-
 $("qrProductList").addEventListener("change",updateQrCopyCount);
 $("qrProductList").addEventListener("input",updateQrCopyCount);
-
-$("printQrButton").addEventListener("click",async () => {
-  if (!sessionValid()) return lockAdmin();
-
-  const chosen = [];
-
-  document.querySelectorAll("[data-qr-check]:checked").forEach(cb => {
-    const p = products.find(x => x.firestoreId === cb.dataset.qrCheck);
-    const input = document.querySelector(
-      `[data-qr-copies="${cb.dataset.qrCheck}"]`
-    );
-    const copies = Math.max(1,Math.min(500,Number(input?.value || 1)));
-
-    if (p) for (let i=0;i<copies;i++) chosen.push(p);
-  });
-
-  if (!chosen.length) return alert("প্রথমে পণ্য নির্বাচন করুন।");
-  if (chosen.length > 300) return alert("একবারে সর্বোচ্চ ৩০০টি QR প্রিন্ট করুন।");
-
-  const area = $("qrPrintArea");
-  area.innerHTML = "";
-  area.classList.remove("hidden");
-
-  chosen.forEach(p => {
-    const item = document.createElement("div");
-    item.className = "qr-print-item";
-
-    const qr = document.createElement("div");
-    qr.className = "qr-image";
-
-    const name = document.createElement("div");
-    name.className = "pname";
-    name.textContent = p.productName || "";
-
-    const pid = document.createElement("div");
-    pid.className = "pid";
-    pid.textContent = p.productId || "";
-
-    item.append(qr,name,pid);
-    area.appendChild(item);
-    new QRCode(qr,{text:productUrl(p),width:160,height:160});
-  });
-
-  await new Promise(resolve => setTimeout(resolve,800));
-  window.print();
-  area.classList.add("hidden");
+$("printQrButton").addEventListener("click",async()=>{
+ if(!sessionValid())return lockAdmin();
+ const chosen=[];
+ document.querySelectorAll("[data-qr-check]:checked").forEach(cb=>{
+  const p=products.find(x=>x.firestoreId===cb.dataset.qrCheck);
+  const input=document.querySelector(`[data-qr-copies="${cb.dataset.qrCheck}"]`);
+  const copies=Math.max(1,Math.min(500,Number(input?.value||1)));
+  if(p)for(let i=0;i<copies;i++)chosen.push(p);
+ });
+ if(!chosen.length)return alert("প্রথমে পণ্য নির্বাচন করুন।");
+ if(chosen.length>300)return alert("একবারে সর্বোচ্চ ৩০০টি QR প্রিন্ট করুন।");
+ const area=$("qrPrintArea");area.innerHTML="";area.classList.remove("hidden");
+ chosen.forEach(p=>{
+  const item=document.createElement("div");item.className="qr-print-item";
+  const qr=document.createElement("div");qr.className="qr-image";
+  const name=document.createElement("div");name.className="pname";name.textContent=p.productName||"";
+  const pid=document.createElement("div");pid.className="pid";pid.textContent=p.productId||"";
+  item.append(qr,name,pid);area.appendChild(item);
+  new QRCode(qr,{text:productUrl(p),width:160,height:160});
+ });
+ await new Promise(resolve=>setTimeout(resolve,800));window.print();area.classList.add("hidden");
 });
 
-function orderItems(o) {
-  if (Array.isArray(o.items) && o.items.length) return o.items;
+/* ---------- ORDER PRICE AND PROFIT FIXES ---------- */
 
-  return [{
-    productId:o.productId || "",
-    firestoreId:o.productFirestoreId || o.firestoreId || "",
-    productName:o.productName || "পণ্য",
-    quantity:Number(o.quantity || 1),
-    sellingPrice:Number(o.sellingPrice || o.price || 0),
-    itemTotal:Number(o.itemTotal ??
-      Number(o.sellingPrice || o.price || 0)*Number(o.quantity || 1))
-  }];
+/* পুরোনো অর্ডারের ভিন্ন ভিন্ন field থেকেও রেট খোঁজা হবে */
+function findProduct(item){
+ const id=item.firestoreId||item.productFirestoreId||item.productDocId||"";
+ const pid=String(item.productId||item.id||"");
+ return products.find(p=>
+  (id&&p.firestoreId===id)||
+  (pid&&String(p.productId||"")===pid)
+ );
+}
+function itemQty(item){return Math.max(1,Number(item.quantity||item.qty||1));}
+function itemRate(item){
+ const fields=["sellingPrice","price","unitPrice","rate"];
+ for(const field of fields){
+  if(item[field]!==undefined&&item[field]!==null&&item[field]!==""){
+   const n=Number(item[field]);if(Number.isFinite(n))return n;
+  }
+ }
+ const p=findProduct(item);
+ if(p)return Number(p.sellingPrice??(Number(p.mrp||0)-Number(p.discount||0)));
+ return Number(item.mrp||0);
+}
+function itemCost(item){
+ const p=findProduct(item);
+ if(p)return Number(p.purchasePrice||0);
+ return Number(item.purchasePrice||item.costPrice||0);
+}
+function itemName(item){
+ const p=findProduct(item);
+ return item.productName||item.name||p?.productName||item.productId||"পণ্য";
+}
+function itemTotal(item){return itemQty(item)*itemRate(item);}
+
+function orderItems(o){
+ if(Array.isArray(o.items)&&o.items.length)return o.items;
+ return [{
+  productId:o.productId||"",
+  firestoreId:o.productFirestoreId||o.firestoreId||"",
+  productName:o.productName||"পণ্য",
+  quantity:Number(o.quantity||1),
+  sellingPrice:Number(o.sellingPrice??o.price??o.mrp??0),
+  itemTotal:Number(o.itemTotal??Number(o.sellingPrice??o.price??o.mrp??0)*Number(o.quantity||1))
+ }];
+}
+/* stored subtotal পুরোনো/ভুল হলে items থেকে নতুন করে হিসাব */
+function orderSubtotal(o){
+ return orderItems(o).reduce((sum,item)=>sum+itemTotal(item),0);
+}
+function extraDiscount(o){return Number(o.adminExtraDiscount??o.discountAmount??0);}
+function finalTotal(o){return Math.max(0,orderSubtotal(o)-extraDiscount(o));}
+function estimatedProfit(o){
+ return orderItems(o).reduce((sum,item)=>
+  sum+(itemRate(item)-itemCost(item))*itemQty(item),0)-extraDiscount(o);
 }
 
-function orderSubtotal(o) {
-  if (o.subtotal != null) return Number(o.subtotal);
-  if (o.originalTotal != null) return Number(o.originalTotal);
+function renderOrders(){
+ if(!["pending","confirmed","cancelled"].includes(currentView))return;
+ const filtered=orders.filter(o=>statusOf(o)===currentView)
+  .sort((a,b)=>(b.createdAt?.seconds||0)-(a.createdAt?.seconds||0));
 
-  return orderItems(o).reduce((s,i) =>
-    s+Number(i.itemTotal ??
-      Number(i.sellingPrice || 0)*Number(i.quantity || 1)),0);
-}
+ $("ordersList").innerHTML=filtered.map(o=>{
+  const status=statusOf(o),items=orderItems(o);
+  const subtotal=orderSubtotal(o),discount=extraDiscount(o),total=finalTotal(o);
+  const profit=estimatedProfit(o);
 
-function extraDiscount(o) {
-  return Number(o.adminExtraDiscount ?? o.discountAmount ?? 0);
-}
+  const itemHtml=items.map(item=>{
+   const qty=itemQty(item),rate=itemRate(item),sum=qty*rate;
+   return `<li>
+    <strong>${safe(itemName(item))}</strong><br>
+    Product ID: ${safe(item.productId||"—")}<br>
+    প্রতি পিস রেট: <strong>${money(rate)}</strong><br>
+    পরিমাণ: ${qty} টি × ${money(rate)}<br>
+    পণ্যের মোট: <strong>${money(sum)}</strong>
+   </li>`;
+  }).join("");
 
-function finalTotal(o) {
-  return Math.max(0,Number(o.finalPrice ??
-    (orderSubtotal(o)-extraDiscount(o))));
-}
+  const editor=editingOrderId===o.firestoreId&&status==="pending"?renderOrderEditor(o):"";
 
-function renderOrders() {
-  const validViews = ["pending","confirmed","cancelled"];
-  if (!validViews.includes(currentView)) return;
+  return `<div class="order">
+   <h3>অর্ডার: ${safe(o.firestoreId)}</h3>
+   <p><strong>নাম:</strong> ${safe(o.customerName||o.name||"—")}</p>
+   <p><strong>ফোন:</strong> ${safe(o.phone||"—")}</p>
+   <p><strong>ঠিকানা:</strong> ${safe(o.address||"—")}</p>
+   <p><strong>পেমেন্ট:</strong> ${safe(o.paymentMethod||"—")}</p>
+   <p><strong>পণ্যের বিস্তারিত:</strong></p><ul>${itemHtml}</ul>
 
-  const filtered = orders
-    .filter(o => statusOf(o) === currentView)
-    .sort((a,b) => (b.createdAt?.seconds || 0)-(a.createdAt?.seconds || 0));
+   <div class="order-summary">
+    <p>পণ্যের মোট দাম: <strong>${money(subtotal)}</strong></p>
+    <p>অতিরিক্ত ছাড়: <strong>${money(discount)}</strong></p>
+    <p>ছাড়ের পর মোট: <strong>${money(total)}</strong></p>
+    <p>আনুমানিক ক্রয়মূল্য: ${money(subtotal-estimatedProfit(o)-discount)}</p>
+    <p class="${profit>=0?"profit":"loss"}">সম্ভাব্য লাভ: ${money(profit)}</p>
+    <p class="small">এটি আনুমানিক লাভ। অন্যান্য খরচ এতে অন্তর্ভুক্ত নয়।</p>
+   </div>
 
-  $("ordersList").innerHTML = filtered.map(o => {
-    const status = statusOf(o);
-    const items = orderItems(o);
+   <p class="status">স্ট্যাটাস: ${safe(status)}</p>
 
-    const itemHtml = items.map(i => `
-      <li>${safe(i.productName || i.productId || "পণ্য")} —
-      ${Number(i.quantity || 1)} টি × ${money(i.sellingPrice || 0)}
-      = ${money(i.itemTotal ??
-        Number(i.quantity || 1)*Number(i.sellingPrice || 0))}</li>
-    `).join("");
-
-    const editor = editingOrderId === o.firestoreId && status === "pending"
-      ? renderOrderEditor(o)
-      : "";
-
-    return `
-      <div class="order">
-        <h3>অর্ডার: ${safe(o.firestoreId)}</h3>
-        <p><strong>নাম:</strong> ${safe(o.customerName || o.name || "—")}</p>
-        <p><strong>ফোন:</strong> ${safe(o.phone || "—")}</p>
-        <p><strong>ঠিকানা:</strong> ${safe(o.address || "—")}</p>
-        <p><strong>পেমেন্ট:</strong> ${safe(o.paymentMethod || "—")}</p>
-        <p><strong>পণ্য:</strong></p><ul>${itemHtml}</ul>
-        <p>পণ্যের মোট দাম: ${money(orderSubtotal(o))}</p>
-        <p>অতিরিক্ত ছাড়: ${money(extraDiscount(o))}</p>
-        <p><strong>চূড়ান্ত দাম: ${money(finalTotal(o))}</strong></p>
-        <p class="status">স্ট্যাটাস: ${safe(status)}</p>
-
-        ${status === "pending" ? `
-          <button data-edit-order="${safe(o.firestoreId)}">অর্ডার এডিট</button>
-          <div class="order-editor">
-            <label>অতিরিক্ত ছাড় (টাকা)</label>
-            <input type="number" min="0" step="0.01"
-              data-discount-input="${safe(o.firestoreId)}"
-              value="${extraDiscount(o)}">
-            <button data-save-discount="${safe(o.firestoreId)}">অতিরিক্ত ছাড় সংরক্ষণ</button>
-          </div>
-          <button class="success" data-confirm="${safe(o.firestoreId)}">অর্ডার নিশ্চিত</button>
-          <button class="secondary" data-cancel="${safe(o.firestoreId)}">অর্ডার বাতিল</button>
-        ` : ""}
-
-        <button class="danger" data-delete-order="${safe(o.firestoreId)}">অর্ডার মুছুন</button>
-        ${editor}
-      </div>
-    `;
-  }).join("") || `<div class="empty">এই বিভাগে কোনো অর্ডার নেই।</div>`;
-}
-
-function renderOrderEditor(o) {
-  const items = orderItems(o);
-
-  return `
-    <div class="order-editor" data-order-editor="${safe(o.firestoreId)}">
-      <h3>অর্ডার এডিট করুন</h3>
-
-      <label>গ্রাহকের নাম</label>
-      <input data-customer-name value="${safe(o.customerName || o.name || "")}" required>
-
-      <label>ফোন নম্বর</label>
-      <input data-customer-phone value="${safe(o.phone || "")}" required>
-
-      <label>ঠিকানা</label>
-      <textarea data-customer-address required>${safe(o.address || "")}</textarea>
-
-      <label>পেমেন্ট পদ্ধতি</label>
-      <input data-payment-method value="${safe(o.paymentMethod || "")}">
-
-      <h3>পণ্যের পরিমাণ ও দাম</h3>
-
-      ${items.map((item,i) => `
-        <div class="editor-item">
-          <strong>${safe(item.productName || item.productId || "পণ্য")}</strong>
-          <div class="small">Product ID: ${safe(item.productId || "—")}</div>
-
-          <label>পরিমাণ</label>
-          <input type="number" min="1" step="1"
-            data-item-qty="${i}" value="${Math.max(1,Number(item.quantity || 1))}" required>
-
-          <label>প্রতি পিস বিক্রয়মূল্য</label>
-          <input type="number" min="0" step="0.01"
-            data-item-price="${i}" value="${Number(item.sellingPrice || 0)}" required>
-        </div>
-      `).join("")}
-
-      <button class="success" data-save-order="${safe(o.firestoreId)}">পরিবর্তন সংরক্ষণ</button>
-      <button class="secondary" data-cancel-edit="${safe(o.firestoreId)}">এডিট বাতিল</button>
-      <p class="small">শুধু অপেক্ষমান অর্ডার এডিট করা যাবে। পরিবর্তনের ফলে স্টক সরাসরি পরিবর্তন হবে না।</p>
+   ${status==="pending"?`
+    <button data-edit-order="${safe(o.firestoreId)}">অর্ডার এডিট</button>
+    <div class="order-editor">
+     <label>অতিরিক্ত ছাড় (টাকা)</label>
+     <input type="number" min="0" step="0.01" data-discount-input="${safe(o.firestoreId)}" value="${discount}">
+     <button data-save-discount="${safe(o.firestoreId)}">অতিরিক্ত ছাড় সংরক্ষণ</button>
     </div>
-  `;
+    <button class="success" data-confirm="${safe(o.firestoreId)}">অর্ডার নিশ্চিত</button>
+    <button class="secondary" data-cancel="${safe(o.firestoreId)}">অর্ডার বাতিল</button>
+   `:""}
+
+   <button class="danger" data-delete-order="${safe(o.firestoreId)}">অর্ডার মুছুন</button>
+   ${editor}
+  </div>`;
+ }).join("")||`<div class="empty">এই বিভাগে কোনো অর্ডার নেই।</div>`;
 }
 
-$("ordersList").addEventListener("click",async e => {
-  if (!sessionValid()) return lockAdmin();
+function renderOrderEditor(o){
+ const items=orderItems(o);
+ return `<div class="order-editor" data-order-editor="${safe(o.firestoreId)}">
+  <h3>অর্ডার এডিট করুন</h3>
+  <label>গ্রাহকের নাম</label>
+  <input data-customer-name value="${safe(o.customerName||o.name||"")}" required>
+  <label>ফোন নম্বর</label>
+  <input data-customer-phone value="${safe(o.phone||"")}" required>
+  <label>ঠিকানা</label>
+  <textarea data-customer-address required>${safe(o.address||"")}</textarea>
+  <label>পেমেন্ট পদ্ধতি</label>
+  <input data-payment-method value="${safe(o.paymentMethod||"")}">
+  <h3>পণ্যের পরিমাণ ও দাম</h3>
+  ${items.map((item,i)=>`
+   <div class="editor-item">
+    <strong>${safe(itemName(item))}</strong>
+    <div class="small">Product ID: ${safe(item.productId||"—")}</div>
+    <label>পরিমাণ (টি)</label>
+    <input type="number" min="1" step="1" data-item-qty="${i}" value="${itemQty(item)}" required>
+    <label>প্রতি পিস বিক্রয়মূল্য (টাকা)</label>
+    <input type="number" min="0" step="0.01" data-item-price="${i}" value="${itemRate(item)}" required>
+    <p>বর্তমান লাইনে মোট: <strong data-line-total="${i}">${money(itemTotal(item))}</strong></p>
+   </div>
+  `).join("")}
+  <div class="order-summary">
+   <p>নতুন মোট দাম: <strong data-editor-subtotal>${money(orderSubtotal(o))}</strong></p>
+   <p>অতিরিক্ত ছাড়: ${money(extraDiscount(o))}</p>
+   <p>ছাড়ের পর মোট: <strong data-editor-final>${money(finalTotal(o))}</strong></p>
+   <p>সম্ভাব্য লাভ: <strong data-editor-profit>${money(estimatedProfit(o))}</strong></p>
+  </div>
+  <button class="success" data-save-order="${safe(o.firestoreId)}">পরিবর্তন সংরক্ষণ</button>
+  <button class="secondary" data-cancel-edit="${safe(o.firestoreId)}">এডিট বাতিল</button>
+  <p class="small">শুধু অপেক্ষমান অর্ডার এডিট করা যাবে। স্টক অর্ডার নিশ্চিত করার সময় কমবে।</p>
+ </div>`;
+}
 
-  const target = e.target;
-  const editId = target.dataset.editOrder;
-  const cancelEditId = target.dataset.cancelEdit;
-  const saveOrderId = target.dataset.saveOrder;
-  const saveDiscountId = target.dataset.saveDiscount;
-  const confirmId = target.dataset.confirm;
-  const cancelId = target.dataset.cancel;
-  const deleteId = target.dataset.deleteOrder;
+/* এডিট ফর্মে পরিমাণ/দাম বদলালে নতুন মোট ও লাভ সঙ্গে সঙ্গে দেখাবে */
+$("ordersList").addEventListener("input",e=>{
+ const editor=e.target.closest("[data-order-editor]");
+ if(!editor)return;
+ if(!e.target.matches("[data-item-qty],[data-item-price]"))return;
 
-  if (editId) {
-    const o = orders.find(x => x.firestoreId === editId);
-    if (!o || statusOf(o) !== "pending") return;
-    editingOrderId = editingOrderId === editId ? null : editId;
-    renderOrders();
-    return;
-  }
+ const o=orders.find(x=>x.firestoreId===editor.dataset.orderEditor);
+ if(!o)return;
+ const items=orderItems(o);
+ let subtotal=0,cost=0;
 
-  if (cancelEditId) {
-    editingOrderId = null;
-    renderOrders();
-    return;
-  }
+ items.forEach((item,i)=>{
+  const qtyInput=editor.querySelector(`[data-item-qty="${i}"]`);
+  const priceInput=editor.querySelector(`[data-item-price="${i}"]`);
+  const qty=Math.max(0,Number(qtyInput.value||0));
+  const price=Math.max(0,Number(priceInput.value||0));
+  const line=qty*price;
+  subtotal+=line;
+  cost+=qty*itemCost(item);
+  const lineEl=editor.querySelector(`[data-line-total="${i}"]`);
+  if(lineEl)lineEl.textContent=money(line);
+ });
 
-  if (saveOrderId) {
-    await saveOrderEdits(saveOrderId);
-    return;
-  }
-
-  if (saveDiscountId) {
-    await saveOrderDiscount(saveDiscountId);
-    return;
-  }
-
-  if (confirmId) {
-    await confirmOrder(confirmId);
-    return;
-  }
-
-  if (cancelId) {
-    await cancelOrder(cancelId);
-    return;
-  }
-
-  if (deleteId) {
-    const o = orders.find(x => x.firestoreId === deleteId);
-    if (!o) return;
-
-    const warning = statusOf(o) === "confirmed"
-      ? "\nসতর্কতা: নিশ্চিত অর্ডার মুছলে স্টক স্বয়ংক্রিয়ভাবে ফেরত আসবে না।"
-      : "";
-
-    if (!confirm("এই অর্ডারটি স্থায়ীভাবে মুছে ফেলবেন?" + warning)) return;
-
-    try {
-      await deleteDoc(doc(db,"orders",deleteId));
-      if (editingOrderId === deleteId) editingOrderId = null;
-      await loadOrders();
-      alert("অর্ডার মুছে ফেলা হয়েছে।");
-    } catch (err) {
-      console.error(err);
-      alert("অর্ডার মুছে ফেলা যায়নি।");
-    }
-  }
+ const disc=extraDiscount(o);
+ const final=Math.max(0,subtotal-disc);
+ const profit=final-cost;
+ editor.querySelector("[data-editor-subtotal]").textContent=money(subtotal);
+ editor.querySelector("[data-editor-final]").textContent=money(final);
+ editor.querySelector("[data-editor-profit]").textContent=money(profit);
 });
 
-async function saveOrderEdits(orderId) {
-  const o = orders.find(x => x.firestoreId === orderId);
-  if (!o || statusOf(o) !== "pending") return;
+$("ordersList").addEventListener("click",async e=>{
+ if(!sessionValid())return lockAdmin();
+ const target=e.target;
+ const editId=target.dataset.editOrder;
+ const cancelEditId=target.dataset.cancelEdit;
+ const saveOrderId=target.dataset.saveOrder;
+ const saveDiscountId=target.dataset.saveDiscount;
+ const confirmId=target.dataset.confirm;
+ const cancelId=target.dataset.cancel;
+ const deleteId=target.dataset.deleteOrder;
 
-  const editor = document.querySelector(`[data-order-editor="${orderId}"]`);
-  if (!editor) return;
+ if(editId){
+  const o=orders.find(x=>x.firestoreId===editId);
+  if(!o||statusOf(o)!=="pending")return;
+  editingOrderId=editingOrderId===editId?null:editId;
+  renderOrders();return;
+ }
+ if(cancelEditId){editingOrderId=null;renderOrders();return;}
+ if(saveOrderId){await saveOrderEdits(saveOrderId);return;}
+ if(saveDiscountId){await saveOrderDiscount(saveDiscountId);return;}
+ if(confirmId){await confirmOrder(confirmId);return;}
+ if(cancelId){await cancelOrder(cancelId);return;}
 
-  const customerName = editor.querySelector("[data-customer-name]").value.trim();
-  const phone = editor.querySelector("[data-customer-phone]").value.trim();
-  const address = editor.querySelector("[data-customer-address]").value.trim();
-  const paymentMethod = editor.querySelector("[data-payment-method]").value.trim();
+ if(deleteId){
+  const o=orders.find(x=>x.firestoreId===deleteId);if(!o)return;
+  const warning=statusOf(o)==="confirmed"?"\nসতর্কতা: নিশ্চিত অর্ডার মুছলে স্টক স্বয়ংক্রিয়ভাবে ফেরত আসবে না।":"";
+  if(!confirm("এই অর্ডারটি স্থায়ীভাবে মুছে ফেলবেন?"+warning))return;
+  try{
+   await deleteDoc(doc(db,"orders",deleteId));
+   if(editingOrderId===deleteId)editingOrderId=null;
+   await loadOrders();alert("অর্ডার মুছে ফেলা হয়েছে।");
+  }catch(err){console.error(err);alert("অর্ডার মুছে ফেলা যায়নি।");}
+ }
+});
 
-  if (!customerName || !phone || !address) {
-    return alert("গ্রাহকের নাম, ফোন ও ঠিকানা পূরণ করুন।");
-  }
+async function saveOrderEdits(orderId){
+ const o=orders.find(x=>x.firestoreId===orderId);
+ if(!o||statusOf(o)!=="pending")return;
+ const editor=document.querySelector(`[data-order-editor="${orderId}"]`);
+ if(!editor)return;
 
-  const oldItems = orderItems(o);
-  const items = oldItems.map((item,i) => {
-    const qty = Number(editor.querySelector(`[data-item-qty="${i}"]`).value);
-    const price = Number(editor.querySelector(`[data-item-price="${i}"]`).value);
+ const customerName=editor.querySelector("[data-customer-name]").value.trim();
+ const phone=editor.querySelector("[data-customer-phone]").value.trim();
+ const address=editor.querySelector("[data-customer-address]").value.trim();
+ const paymentMethod=editor.querySelector("[data-payment-method]").value.trim();
 
-    if (!Number.isInteger(qty) || qty < 1 || !Number.isFinite(price) || price < 0) {
-      throw new Error("পণ্যের পরিমাণ ও দাম সঠিকভাবে লিখুন।");
-    }
+ if(!customerName||!phone||!address)return alert("গ্রাহকের নাম, ফোন ও ঠিকানা পূরণ করুন।");
 
-    return {
-      ...item,
-      quantity:qty,
-      sellingPrice:price,
-      itemTotal:qty*price
-    };
+ try{
+  const oldItems=orderItems(o);
+  const items=oldItems.map((item,i)=>{
+   const qty=Number(editor.querySelector(`[data-item-qty="${i}"]`).value);
+   const price=Number(editor.querySelector(`[data-item-price="${i}"]`).value);
+   if(!Number.isInteger(qty)||qty<1||!Number.isFinite(price)||price<0)
+    throw new Error("পণ্যের পরিমাণ ও দাম সঠিকভাবে লিখুন।");
+   return {...item,productName:itemName(item),quantity:qty,sellingPrice:price,itemTotal:qty*price};
   });
 
-  try {
-    const subtotal = items.reduce((sum,item) => sum+item.itemTotal,0);
-    const discount = extraDiscount(o);
+  const subtotal=items.reduce((sum,item)=>sum+Number(item.itemTotal||0),0);
+  const discount=extraDiscount(o);
+  if(discount>subtotal)return alert("অতিরিক্ত ছাড় নতুন মোট দামের চেয়ে বেশি হতে পারবে না।");
 
-    if (discount > subtotal) {
-      return alert("অতিরিক্ত ছাড় নতুন মোট দামের চেয়ে বেশি হতে পারবে না। আগে ছাড় পরিবর্তন করুন।");
+  await setDoc(doc(db,"orders",orderId),{
+   customerName,name:customerName,phone,address,paymentMethod,
+   items,totalQuantity:items.reduce((sum,item)=>sum+item.quantity,0),
+   subtotal,originalTotal:subtotal,totalPrice:subtotal-discount,
+   adminExtraDiscount:discount,discountAmount:discount,
+   finalPrice:subtotal-discount,updatedAt:serverTimestamp()
+  },{merge:true});
+
+  editingOrderId=null;
+  await loadOrders();
+  alert("অর্ডারের পরিবর্তন সংরক্ষণ হয়েছে।");
+ }catch(err){console.error(err);alert("অর্ডার সংরক্ষণ হয়নি: "+(err.message||"সমস্যা হয়েছে"));}
+}
+
+async function saveOrderDiscount(orderId){
+ const o=orders.find(x=>x.firestoreId===orderId);
+ if(!o||statusOf(o)!=="pending")return;
+ const input=document.querySelector(`[data-discount-input="${orderId}"]`);
+ const value=Number(input?.value);
+ if(!Number.isFinite(value)||value<0)return alert("সঠিক ছাড় লিখুন।");
+ if(value>orderSubtotal(o))return alert("অতিরিক্ত ছাড় অর্ডারের মোট দামের চেয়ে বেশি হতে পারবে না।");
+
+ try{
+  await setDoc(doc(db,"orders",orderId),{
+   adminExtraDiscount:value,discountAmount:value,
+   finalPrice:Math.max(0,orderSubtotal(o)-value),
+   totalPrice:Math.max(0,orderSubtotal(o)-value),
+   updatedAt:serverTimestamp()
+  },{merge:true});
+  await loadOrders();alert("অতিরিক্ত ছাড় সংরক্ষণ হয়েছে।");
+ }catch(err){console.error(err);alert("ছাড় সংরক্ষণ হয়নি।");}
+}
+
+async function confirmOrder(orderId){
+ const o=orders.find(x=>x.firestoreId===orderId);
+ if(!o||statusOf(o)!=="pending")return alert("এই অর্ডারটি আর অপেক্ষমান নেই।");
+ if(!confirm("অর্ডার নিশ্চিত করবেন? নিশ্চিত করলে স্টক কমবে।"))return;
+
+ try{
+  await runTransaction(db,async tx=>{
+   const orderRef=doc(db,"orders",orderId);
+   const orderSnap=await tx.get(orderRef);
+   if(!orderSnap.exists())throw new Error("অর্ডার পাওয়া যায়নি।");
+   const liveOrder=orderSnap.data();
+   if(statusOf(liveOrder)!=="pending")throw new Error("অর্ডারটি ইতিমধ্যে পরিবর্তিত হয়েছে।");
+
+   const grouped=new Map();
+   for(const item of orderItems(liveOrder)){
+    let id=item.firestoreId||item.productFirestoreId||"";
+    if(!id){
+     const match=products.find(p=>String(p.productId)===String(item.productId||""));
+     id=match?.firestoreId;
     }
+    if(!id)throw new Error("পণ্যের Firestore ID পাওয়া যায়নি: "+(item.productId||""));
+    grouped.set(id,(grouped.get(id)||0)+itemQty(item));
+   }
 
-    await setDoc(doc(db,"orders",orderId),{
-      customerName,
-      name:customerName,
-      phone,
-      address,
-      paymentMethod,
-      items,
-      totalQuantity:items.reduce((sum,item) => sum+item.quantity,0),
-      subtotal,
-      originalTotal:subtotal,
-      totalPrice:subtotal-discount,
-      finalPrice:subtotal-discount,
-      updatedAt:serverTimestamp()
-    },{merge:true});
-
-    editingOrderId = null;
-    await loadOrders();
-    alert("অর্ডারের পরিবর্তন সংরক্ষণ হয়েছে।");
-  } catch (err) {
-    console.error(err);
-    alert("অর্ডার সংরক্ষণ হয়নি: " + (err.message || "সমস্যা হয়েছে"));
-  }
+   const refs=[...grouped.entries()].map(([id,qty])=>({
+    id,qty,productRef:doc(db,"products",id),publicRef:doc(db,"publicProducts",id)
+   }));
+   const reads=[];
+   for(const r of refs){
+    const ps=await tx.get(r.productRef);
+    const pubs=await tx.get(r.publicRef);
+    if(!ps.exists())throw new Error("একটি পণ্য পাওয়া যায়নি।");
+    reads.push({...r,ps,pubs});
+   }
+   for(const r of reads){
+    if(Number(r.ps.data().stock||0)<r.qty)
+     throw new Error("পর্যাপ্ত স্টক নেই: "+(r.ps.data().productName||""));
+   }
+   for(const r of reads){
+    const newStock=Number(r.ps.data().stock||0)-r.qty;
+    tx.update(r.productRef,{stock:newStock,updatedAt:serverTimestamp()});
+    if(r.pubs.exists())tx.update(r.publicRef,{stock:newStock,updatedAt:serverTimestamp()});
+   }
+   tx.update(orderRef,{status:"confirmed",orderStatus:"confirmed",confirmedAt:serverTimestamp(),updatedAt:serverTimestamp()});
+  });
+  editingOrderId=null;
+  await Promise.all([loadProducts(),loadOrders()]);
+  alert("অর্ডার নিশ্চিত হয়েছে এবং স্টক কমানো হয়েছে।");
+ }catch(err){console.error(err);alert("অর্ডার নিশ্চিত হয়নি: "+(err.message||"সমস্যা হয়েছে"));}
 }
 
-async function saveOrderDiscount(orderId) {
-  const o = orders.find(x => x.firestoreId === orderId);
-  if (!o || statusOf(o) !== "pending") return;
-
-  const input = document.querySelector(`[data-discount-input="${orderId}"]`);
-  const value = Number(input?.value);
-
-  if (!Number.isFinite(value) || value < 0)
-    return alert("সঠিক ছাড় লিখুন।");
-
-  if (value > orderSubtotal(o))
-    return alert("অতিরিক্ত ছাড় অর্ডারের মোট দামের চেয়ে বেশি হতে পারবে না।");
-
-  try {
-    await setDoc(doc(db,"orders",orderId),{
-      adminExtraDiscount:value,
-      discountAmount:value,
-      finalPrice:Math.max(0,orderSubtotal(o)-value),
-      totalPrice:Math.max(0,orderSubtotal(o)-value),
-      updatedAt:serverTimestamp()
-    },{merge:true});
-
-    await loadOrders();
-    alert("অতিরিক্ত ছাড় সংরক্ষণ হয়েছে।");
-  } catch (err) {
-    console.error(err);
-    alert("ছাড় সংরক্ষণ হয়নি।");
-  }
+async function cancelOrder(orderId){
+ const o=orders.find(x=>x.firestoreId===orderId);
+ if(!o||statusOf(o)!=="pending")return;
+ if(!confirm("অর্ডার বাতিল করবেন?"))return;
+ try{
+  await setDoc(doc(db,"orders",orderId),{
+   status:"cancelled",orderStatus:"cancelled",
+   cancelledAt:serverTimestamp(),updatedAt:serverTimestamp()
+  },{merge:true});
+  editingOrderId=null;await loadOrders();alert("অর্ডার বাতিল হয়েছে।");
+ }catch(err){console.error(err);alert("অর্ডার বাতিল করা যায়নি।");}
 }
 
-async function confirmOrder(orderId) {
-  const o = orders.find(x => x.firestoreId === orderId);
-  if (!o || statusOf(o) !== "pending")
-    return alert("এই অর্ডারটি আর অপেক্ষমান নেই।");
-
-  if (!confirm("অর্ডার নিশ্চিত করবেন? নিশ্চিত করলে স্টক কমবে।")) return;
-
-  try {
-    await runTransaction(db,async tx => {
-      const orderRef = doc(db,"orders",orderId);
-      const orderSnap = await tx.get(orderRef);
-
-      if (!orderSnap.exists()) throw new Error("অর্ডার পাওয়া যায়নি।");
-
-      const liveOrder = orderSnap.data();
-      if (statusOf(liveOrder) !== "pending")
-        throw new Error("অর্ডারটি ইতিমধ্যে পরিবর্তিত হয়েছে।");
-
-      const items = orderItems(liveOrder);
-      const grouped = new Map();
-
-      for (const item of items) {
-        let id = item.firestoreId;
-
-        if (!id) {
-          const match = products.find(p => p.productId === item.productId);
-          id = match?.firestoreId;
-        }
-
-        if (!id) {
-          throw new Error("পণ্যের Firestore ID পাওয়া যায়নি: " + (item.productId || ""));
-        }
-
-        grouped.set(id,(grouped.get(id) || 0)+Number(item.quantity || 1));
-      }
-
-      const refs = [...grouped.entries()].map(([id,qty]) => ({
-        id,qty,
-        productRef:doc(db,"products",id),
-        publicRef:doc(db,"publicProducts",id)
-      }));
-
-      const reads = [];
-
-      // সব transaction read আগে করা হচ্ছে।
-      for (const r of refs) {
-        const ps = await tx.get(r.productRef);
-        const pubs = await tx.get(r.publicRef);
-
-        if (!ps.exists()) throw new Error("একটি পণ্য পাওয়া যায়নি।");
-        reads.push({...r,ps,pubs});
-      }
-
-      for (const r of reads) {
-        const stock = Number(r.ps.data().stock || 0);
-        if (stock < r.qty) {
-          throw new Error("পর্যাপ্ত স্টক নেই: " + (r.ps.data().productName || ""));
-        }
-      }
-
-      for (const r of reads) {
-        const newStock = Number(r.ps.data().stock || 0)-r.qty;
-
-        tx.update(r.productRef,{
-          stock:newStock,
-          updatedAt:serverTimestamp()
-        });
-
-        if (r.pubs.exists()) {
-          tx.update(r.publicRef,{
-            stock:newStock,
-            updatedAt:serverTimestamp()
-          });
-        }
-      }
-
-      tx.update(orderRef,{
-        status:"confirmed",
-        orderStatus:"confirmed",
-        confirmedAt:serverTimestamp(),
-        updatedAt:serverTimestamp()
-      });
-    });
-
-    editingOrderId = null;
-    await Promise.all([loadProducts(),loadOrders()]);
-    alert("অর্ডার নিশ্চিত হয়েছে এবং স্টক কমানো হয়েছে।");
-  } catch (err) {
-    console.error(err);
-    alert("অর্ডার নিশ্চিত হয়নি: " + (err.message || "সমস্যা হয়েছে"));
-  }
-}
-
-async function cancelOrder(orderId) {
-  const o = orders.find(x => x.firestoreId === orderId);
-  if (!o || statusOf(o) !== "pending") return;
-  if (!confirm("অর্ডার বাতিল করবেন?")) return;
-
-  try {
-    await setDoc(doc(db,"orders",orderId),{
-      status:"cancelled",
-      orderStatus:"cancelled",
-      cancelledAt:serverTimestamp(),
-      updatedAt:serverTimestamp()
-    },{merge:true});
-
-    editingOrderId = null;
-    await loadOrders();
-    alert("অর্ডার বাতিল হয়েছে।");
-  } catch (err) {
-    console.error(err);
-    alert("অর্ডার বাতিল করা যায়নি।");
-  }
-}
-
-$("refreshOrders").addEventListener("click",async () => {
-  if (!sessionValid()) return lockAdmin();
-
-  try {
-    await loadOrders();
-  } catch (err) {
-    console.error(err);
-    alert("অর্ডার রিফ্রেশ করা যায়নি।");
-  }
+$("refreshOrders").addEventListener("click",async()=>{
+ if(!sessionValid())return lockAdmin();
+ try{await Promise.all([loadProducts(),loadOrders()]);}
+ catch(err){console.error(err);alert("অর্ডার রিফ্রেশ করা যায়নি।");}
 });
 
-window.addEventListener("DOMContentLoaded",() => {
-  if (sessionValid()) openAdmin();
-});
-
-window.addEventListener("focus",() => {
-  if (sessionValid()) {
-    armSessionExpiry();
-  } else if (!$("adminSection").classList.contains("hidden")) {
-    lockAdmin();
-  }
+window.addEventListener("DOMContentLoaded",()=>{if(sessionValid())openAdmin();});
+window.addEventListener("focus",()=>{
+ if(sessionValid())armSessionExpiry();
+ else if(!$("adminSection").classList.contains("hidden"))lockAdmin();
 });
 </script>
 </body>
