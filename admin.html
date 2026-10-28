@@ -241,20 +241,16 @@ import {
   runTransaction,
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
-
-/* =====================================================
-   ১. FIREBASE CONFIGURATION
-   ===================================================== */
-
-// এখানে তোমার আগের কোডে থাকা সম্পূর্ণ Firebase config বসাবে।
 const firebaseConfig = {
-  apiKey: "তোমার_আগের_apiKey",
+  apiKey: "AIzaSyCY7V8_MgILkg4yAauiqzKZ3U0o3w_o_B4",
   authDomain: "nirjhor-library.firebaseapp.com",
   projectId: "nirjhor-library",
-  storageBucket: "তোমার_আগের_storageBucket",
-  messagingSenderId: "তোমার_আগের_messagingSenderId",
-  appId: "তোমার_আগের_appId"
+  storageBucket: "nirjhor-library.firebasestorage.app",
+  messagingSenderId: "771313980493",
+  appId: "1:771313980493:web:ff76cbd83d88e102fd7804",
+  measurementId: "G-213SK9BK75"
 };
+
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
@@ -267,13 +263,10 @@ let editingProductId = "";
 let selectedImage = "";
 let html5QrCode = null;
 let currentView = "home";
+let currentAdminName = "";
 
 const SESSION_KEY = "nirjhorAdminAuthTime";
 const SESSION_DURATION = 10 * 60 * 1000;
-
-/* =====================================================
-   ২. সাধারণ সহায়ক ফাংশন
-   ===================================================== */
 
 function money(value) {
   return "৳" + Number(value || 0).toLocaleString("en-BD", {
@@ -309,9 +302,6 @@ function calculateSellingPrice() {
 $("mrp").addEventListener("input", calculateSellingPrice);
 $("discount").addEventListener("input", calculateSellingPrice);
 
-/* =====================================================
-   ৩. লগইন ও লগআউট
-   ===================================================== */
 
 function showAdmin() {
   $("loginSection").classList.add("hidden");
@@ -324,6 +314,8 @@ function showAdmin() {
 
 function lockAdmin() {
   sessionStorage.removeItem(SESSION_KEY);
+  sessionStorage.removeItem("nirjhorAdminName");
+  currentAdminName = "";
 
   $("adminSection").classList.add("hidden");
   $("loginSection").classList.remove("hidden");
@@ -346,6 +338,8 @@ async function loginAdmin() {
     return;
   }
 
+  currentAdminName = password === "Rakibul#1" ? "রাকিবুল" : password === "Kashem#1" ? "কাশেম" : "মোশার্ফ";
+  sessionStorage.setItem("nirjhorAdminName", currentAdminName);
   sessionStorage.setItem(SESSION_KEY, String(Date.now()));
   $("loginMessage").textContent = "";
   $("adminPassword").value = "";
@@ -384,6 +378,7 @@ $("headerHome").addEventListener("click", () => showView("home"));
 const savedSession = Number(sessionStorage.getItem(SESSION_KEY) || 0);
 
 if (savedSession && Date.now() - savedSession < SESSION_DURATION) {
+  currentAdminName = sessionStorage.getItem("nirjhorAdminName") || "";
   showAdmin();
   loadProducts()
     .then(loadOrders)
@@ -1173,7 +1168,16 @@ function itemPrice(item) {
 }
 
 function itemCost(item) {
-  return Math.max(0, Number(item.purchasePrice ?? item.costPrice ?? 0));
+  const savedCost = Number(item.purchasePrice ?? item.costPrice);
+  if (Number.isFinite(savedCost) && savedCost >= 0 &&
+      (item.purchasePrice != null || item.costPrice != null)) return savedCost;
+
+  const key = String(itemProductId(item) || "");
+  const product = products.find(p =>
+    String(p.productId || "") === key ||
+    String(p.firestoreId || "") === key
+  );
+  return Math.max(0, Number(product?.purchasePrice || 0));
 }
 
 function itemProductId(item) {
@@ -1199,7 +1203,7 @@ function orderSubtotal(order) {
 
 function orderExtraDiscount(order) {
   return Math.max(0, Number(
-    order.extraDiscount ?? order.additionalDiscount ?? order.discountAmount ?? 0
+    order.adminExtraDiscount ?? order.extraDiscount ?? order.additionalDiscount ?? order.discountAmount ?? 0
   ));
 }
 
@@ -1235,7 +1239,7 @@ function displayOrders(view) {
   const filtered = orders.filter(order => orderStatus(order) === view);
 
   if (!filtered.length) {
-    holder.innerHTML = '<div class="empty">এই বিভাগে কোনো অর্ডার নেই।</div>';
+    holder.innerHTML = '<div class="empty">কোনো অর্ডার নেই।</div>';
     return;
   }
 
@@ -1646,6 +1650,9 @@ async function confirmOrder(orderId) {
       transaction.update(orderRef, {
         status: "confirmed",
         orderStatus: "confirmed",
+        approvedByName: currentAdminName || "অ্যাডমিন",
+        confirmedByName: currentAdminName || "অ্যাডমিন",
+        adminName: currentAdminName || "অ্যাডমিন",
         confirmedAt: serverTimestamp(),
         updatedAt: serverTimestamp()
       });
