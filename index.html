@@ -1,240 +1,152 @@
-<!DOCTYPE html><html lang="bn">
+<!DOCTYPE html>
+<html lang="bn">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#0755b5"><title>নির্ঝর লাইব্রেরী</title>
-
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#fff0f5">
+<title>নির্ঝর লাইব্রেরী</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-    * {
-        box-sizing: border-box;
-    }
+*{box-sizing:border-box}
+:root{--pink:#ed1760;--pink-dark:#c81050;--text:#242333;--muted:#777582}
+body{margin:0;font-family:"Noto Sans Bengali","SolaimanLipi","Vrinda",Arial,sans-serif;color:var(--text);background:#fff8fc}
+header{min-height:76px;padding:12px 4%;display:flex;align-items:center;justify-content:space-between;gap:12px;background:#fff;border-bottom:1px solid #f5dce7;position:relative;z-index:10}
+.brand{display:flex;align-items:center;gap:10px;color:var(--text);text-decoration:none}.logo{width:48px;height:48px;flex-shrink:0;display:grid;place-items:center;border:2px solid #f3b6ce;border-radius:15px;background:#fff0f6;font-size:26px}.brand-name{font-size:20px;font-weight:800;white-space:nowrap}.brand-tag{margin-left:5px;padding:3px 7px;border-radius:7px;color:var(--pink-dark);background:#ffe4ee;font-size:11px;font-weight:700}
+.header-actions{display:flex;align-items:center;gap:8px}.header-btn{border:1px solid #f5d9e5;background:#fff1f6;color:var(--pink-dark);border-radius:12px;padding:9px 12px;font:inherit;cursor:pointer;text-decoration:none;white-space:nowrap}.menu-btn{font-size:23px;border:0;background:transparent;cursor:pointer;color:#555;padding:5px}.mobile-menu{display:none;position:absolute;top:100%;left:0;right:0;padding:12px 5%;background:white;border-bottom:1px solid #f0dce6;box-shadow:0 8px 15px #0000000d}.mobile-menu.open{display:grid;gap:3px}.mobile-menu a{display:block;padding:12px 8px;color:var(--text);text-decoration:none;border-radius:8px}.mobile-menu a:hover{background:#fff0f6;color:var(--pink-dark)}
+.hero{padding:45px 18px 38px;text-align:center;background:radial-gradient(ellipse at top left,#ffe0eb 0%,transparent 52%),linear-gradient(145deg,#ffeaf2,#ffd6e5 55%,#fff1f7)}.hero-inner{max-width:850px;margin:auto}.pill{display:inline-flex;align-items:center;gap:8px;padding:8px 16px;margin-bottom:19px;background:#ffffff9e;color:#a72c58;border:1px solid #f5c1d5;border-radius:30px;font-size:13px;font-weight:600}.pill-dot{width:8px;height:8px;background:var(--pink);border-radius:50%}.hero h1{font-size:clamp(25px,4.2vw,39px);font-weight:800;line-height:1.55;margin:0 auto 15px}.hero h1 span{color:var(--pink)}.hero-description{max-width:690px;margin:0 auto 27px;font-size:15px;line-height:1.95;color:#71616b}
+.search-box{max-width:700px;margin:0 auto;padding:7px;display:flex;align-items:center;gap:8px;background:white;border:2px solid #f4bed3;border-radius:19px;box-shadow:0 7px 22px #b7275f1a}.search-icon{font-size:23px;padding-left:10px;color:var(--pink)}.search-box input{flex:1;min-width:0;padding:12px 5px;border:0;outline:0;font:inherit;font-size:14px;background:transparent;color:var(--text)}.search-box input::placeholder{color:#aaa2a9}.primary-btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;border:0;border-radius:12px;padding:13px 19px;background:var(--pink);color:white;font-family:inherit;font-size:14px;font-weight:700;text-decoration:none;cursor:pointer;box-shadow:0 4px 12px #ed176033;transition:background .2s}.primary-btn:hover{background:var(--pink-dark)}.scan-btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 13px;border:1px solid #f2bfd3;border-radius:12px;background:#fff0f6;color:#c81050;font-family:inherit;font-size:14px;font-weight:700;white-space:nowrap;cursor:pointer}.scan-btn span:first-child{font-size:22px}
+main{width:92%;max-width:1050px;margin:0 auto}.features{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:27px 0 40px}.feature{min-height:105px;display:flex;align-items:center;justify-content:center;gap:12px;padding:18px 12px;background:white;border:1px solid #f0e0e8;border-radius:20px;box-shadow:0 4px 15px #46223509;transition:transform .2s}.feature:hover{transform:translateY(-3px)}.feature-icon{font-size:28px}.feature-text{font-size:14px;line-height:1.8;color:#59545d}.feature-text strong{display:block;font-size:16px;color:var(--text)}.products-section{margin:40px 0 32px;padding:15px 0 35px}.section-label{display:inline-block;padding:7px 13px;background:#e9f8f0;color:#18865e;border:1px solid #ccebdc;border-radius:20px;font-size:13px;font-weight:700}.section-title{margin:17px 0 7px;font-size:clamp(22px,3vw,29px);line-height:1.6;font-weight:800}.section-description{margin:0 0 22px;color:var(--muted);font-size:14px;line-height:1.9}.product-panel{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:25px;background:white;border:1px solid #f0dce6;border-radius:20px;box-shadow:0 5px 20px #4622350a}.product-info{flex:1}.product-emoji{font-size:42px;margin-bottom:8px}.product-panel h3{margin:0 0 8px;font-size:19px}.product-panel p{margin:0;color:var(--muted);font-size:14px;line-height:1.8}.note{margin:25px 0 35px;padding:17px 18px;background:#fff0f6;border:1px solid #f5d5e3;border-radius:15px;color:#81526a;font-size:14px;line-height:1.9}footer{padding:30px 15px;background:white;border-top:1px solid #f0dce6;text-align:center;color:#77717b;font-size:13px;line-height:2}footer strong{font-size:17px;color:var(--pink-dark)}
+.contact-wrap{max-width:1050px;margin:0 auto 22px;padding:0 12px}.contact-heading{margin:10px 0 18px;color:var(--text);font-size:22px;font-weight:800}.contact-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;text-align:left}.contact-card{padding:18px 16px;background:#fff8fc;border:1px solid #f2d7e3;border-radius:17px;box-shadow:0 4px 15px #46223508}.contact-role{display:inline-block;margin-bottom:9px;padding:4px 9px;border-radius:8px;background:#ffe4ee;color:#a71e50;font-size:12px;font-weight:700}.contact-name{margin:0 0 10px;color:var(--text);font-size:15px;font-weight:800;line-height:1.7;overflow-wrap:anywhere}.contact-phone{display:inline-flex;align-items:center;gap:7px;padding:9px 12px;border-radius:10px;background:#ed1760;color:white;text-decoration:none;font-weight:700;font-size:13px;white-space:nowrap}.contact-phone:hover{background:#c81050}body.dark .contact-card{background:#30232d;border-color:#503144}body.dark .contact-name,body.dark .contact-heading{color:#f5edf2}body.dark .contact-role{background:#4a293a;color:#ffd4e4}
+.scanner-modal[hidden]{display:none!important}.scanner-modal{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px;background:#140a12b8}.scanner-box{position:relative;width:100%;max-width:440px;max-height:90vh;overflow-y:auto;padding:24px 18px;border-radius:22px;background:white;color:#242333;text-align:center}.scanner-box h2{margin:8px 28px;font-size:19px;line-height:1.7}.scanner-box p{color:#77717b;font-size:13px;line-height:1.8}.scanner-close{position:absolute;top:10px;right:12px;width:36px;height:36px;border:0;border-radius:50%;background:#fff0f6;color:#c81050;font-size:20px;cursor:pointer}#qr-reader{width:100%;margin:15px auto;overflow:hidden;border-radius:12px}#qr-reader video{max-width:100%;border-radius:12px}#scannerStatus{overflow-wrap:anywhere}.scanner-actions{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}.secondary-btn{border:1px solid #e9c7d7;border-radius:12px;padding:12px 16px;background:white;color:#9b2452;font-family:inherit;font-weight:700;cursor:pointer}
+body.dark{--text:#f5edf2;--muted:#c1b2bd;background:#19151b}body.dark header,body.dark .feature,body.dark .product-panel,body.dark footer,body.dark .mobile-menu{background:#241e26;border-color:#41303c}body.dark .brand,body.dark .feature-text,body.dark .feature-text strong,body.dark .mobile-menu a{color:#f5edf2}body.dark .hero{background:linear-gradient(145deg,#38202d,#442032,#241b25)}body.dark .hero-description,body.dark .product-panel p{color:#d0bac6}body.dark .search-box{background:#241e26;border-color:#5b3448}body.dark .search-box input{color:white}body.dark .note{background:#30212b;border-color:#503144;color:#e4c4d4}
 
-    body {
-        margin: 0;
-        font-family: "Noto Sans Bengali", "SolaimanLipi",
-                     "Vrinda", Arial, sans-serif;
-        background: #f2f7ff;
-        color: #24344d;
-    }
+.whatsapp-link{display:inline-flex;align-items:center;gap:6px;margin:8px 0 0 5px;padding:9px 11px;border-radius:10px;background:#e7f9ee;color:#137b43;text-decoration:none;font-weight:700;font-size:12px;white-space:nowrap}.whatsapp-link:hover{background:#d0f3dc}
+.reviews-section{margin:35px 0 42px;padding:25px;background:#fff;border:1px solid #f0dce6;border-radius:22px;box-shadow:0 5px 20px #4622350a}.reviews-section h2{margin:0 0 7px;font-size:clamp(21px,3vw,28px)}.reviews-intro{margin:0 0 20px;color:var(--muted);font-size:14px;line-height:1.9}.review-form{display:grid;grid-template-columns:1fr 1fr;gap:12px}.review-field{display:flex;flex-direction:column;gap:6px}.review-field.full{grid-column:1/-1}.review-field label{font-size:13px;font-weight:700}.review-field input,.review-field select,.review-field textarea{width:100%;padding:11px 12px;border:1px solid #e8d6df;border-radius:11px;background:#fff;color:#242333;font:inherit;font-size:14px;outline-color:var(--pink)}.review-field textarea{min-height:90px;resize:vertical}.reviews-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:22px}.review-item{padding:15px;border:1px solid #f0dce6;border-radius:14px;background:#fff8fc;overflow-wrap:anywhere}.review-item strong{font-size:14px}.review-stars{color:#e9a000;letter-spacing:2px}.review-item p{margin:8px 0 0;color:var(--muted);font-size:13px;line-height:1.8;white-space:pre-wrap}.review-empty{padding:14px;border:1px dashed #e8cbd9;border-radius:12px;color:var(--muted);font-size:13px;grid-column:1/-1}.review-notice{font-size:12px;color:var(--muted);line-height:1.8;margin:12px 0 0}
+body.dark .reviews-section{background:#241e26;border-color:#41303c}body.dark .review-field input,body.dark .review-field select,body.dark .review-field textarea{background:#19151b;color:#f5edf2;border-color:#503144}body.dark .review-item{background:#30232d;border-color:#503144}body.dark .whatsapp-link{background:#183b29;color:#b8f4cf}
+@media(max-width:600px){.reviews-section{padding:17px}.review-form{grid-template-columns:1fr}.review-field.full{grid-column:auto}.reviews-list{grid-template-columns:1fr}.whatsapp-link{margin-left:0;margin-top:8px}.contact-phone{margin-bottom:3px}}
 
-    header {
-        background: linear-gradient(135deg, #0755b5, #1685e8);
-        color: white;
-        text-align: center;
-        padding: 35px 15px 40px;
-        border-radius: 0 0 28px 28px;
-        box-shadow: 0 5px 18px rgba(0, 74, 160, 0.18);
-    }
-
-    .logo {
-        width: 72px;
-        height: 72px;
-        margin: 0 auto 12px;
-        border: 2px solid rgba(255,255,255,0.8);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 32px;
-        background: rgba(255,255,255,0.15);
-    }
-
-    header h1 {
-        margin: 0 0 10px;
-        font-size: 30px;
-    }
-
-    header p {
-        margin: 0;
-        font-size: 16px;
-        color: #eaf4ff;
-    }
-
-    main {
-        width: 92%;
-        max-width: 700px;
-        margin: 35px auto;
-    }
-
-    .welcome-card {
-        background: white;
-        text-align: center;
-        padding: 35px 22px;
-        border-radius: 20px;
-        box-shadow: 0 5px 25px rgba(35, 86, 145, 0.09);
-        border: 1px solid #e1ecfa;
-    }
-
-    .welcome-icon {
-        font-size: 48px;
-        margin-bottom: 12px;
-    }
-
-    h2 {
-        color: #0755b5;
-        font-size: 23px;
-        line-height: 1.6;
-        margin: 0 0 15px;
-    }
-
-    .description {
-        font-size: 16px;
-        line-height: 1.9;
-        color: #596b82;
-        margin: 0 auto 25px;
-    }
-
-    .features {
-        display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 12px;
-        margin: 25px 0;
-    }
-
-    .feature {
-        background: #f1f7ff;
-        border: 1px solid #dfebfb;
-        border-radius: 14px;
-        padding: 18px 8px;
-        font-size: 14px;
-        line-height: 1.7;
-    }
-
-    .feature-icon {
-        display: block;
-        font-size: 27px;
-        margin-bottom: 6px;
-    }
-
-    .buy-button {
-        display: inline-block;
-        background: #075fc7;
-        color: white;
-        text-decoration: none;
-        padding: 14px 30px;
-        border-radius: 12px;
-        font-size: 17px;
-        font-weight: bold;
-        border: none;
-        cursor: pointer;
-        box-shadow: 0 4px 12px rgba(7, 95, 199, 0.22);
-        transition: background 0.2s ease;
-    }
-
-    .buy-button:hover {
-        background: #064a9b;
-    }
-
-    .note {
-        margin-top: 22px;
-        padding: 13px;
-        background: #eef6ff;
-        border-radius: 10px;
-        color: #42668f;
-        font-size: 14px;
-        line-height: 1.8;
-    }
-
-    footer {
-        text-align: center;
-        background: #ffffff;
-        border-top: 1px solid #e0eafa;
-        padding: 22px 12px;
-        color: #65758b;
-        font-size: 14px;
-        line-height: 1.8;
-    }
-
-    @media (max-width: 480px) {
-        header {
-            padding: 28px 12px 32px;
-        }
-
-        header h1 {
-            font-size: 25px;
-        }
-
-        main {
-            margin: 22px auto;
-        }
-
-        .welcome-card {
-            padding: 25px 15px;
-        }
-
-        h2 {
-            font-size: 20px;
-        }
-
-        .features {
-            gap: 7px;
-        }
-
-        .feature {
-            padding: 13px 4px;
-            font-size: 12px;
-        }
-
-        .buy-button {
-            max-width: 100%;
-            padding: 13px 22px;
-        }
-    }
+@media(max-width:700px){.contact-grid{grid-template-columns:1fr}.contact-card{padding:16px}.contact-heading{font-size:20px}}
+@media(max-width:600px){header{min-height:68px;padding:10px 3%}.logo{width:42px;height:42px;font-size:23px}.brand{gap:7px}.brand-name{font-size:16px}.brand-tag{font-size:10px;padding:2px 5px}.header-actions{gap:3px}.header-btn{padding:8px 9px;font-size:12px}.hero{padding:34px 13px 29px}.hero h1{font-size:25px;line-height:1.6}.hero-description{font-size:13px;line-height:1.9}.search-box{gap:4px;flex-wrap:wrap;border-radius:15px}.search-icon{font-size:19px;padding-left:5px}.search-box input{font-size:12px;padding:10px 3px}.search-box .primary-btn{padding:10px 12px;font-size:12px}.scan-btn{padding:8px 10px;font-size:12px}.features{gap:8px;margin:20px 0 30px}.feature{min-height:108px;flex-direction:column;gap:4px;padding:12px 4px;text-align:center;border-radius:15px}.feature-icon{font-size:25px}.feature-text{font-size:11px;line-height:1.7}.feature-text strong{font-size:14px}.product-panel{padding:17px;gap:10px}.product-panel h3{font-size:16px}.product-panel p{font-size:12px}.product-emoji{font-size:34px}.product-panel .primary-btn{padding:10px 12px;font-size:12px;white-space:nowrap}.note{font-size:12px}}
+@media(max-width:360px){.brand-name{font-size:14px}.brand-tag{display:none}.header-btn{padding:7px}.hero h1{font-size:22px}.scan-label{display:none}}
 </style>
-
-</head><body><header>
-    <div class="logo">📚</div>
-    <h1>নির্ঝর লাইব্রেরী</h1>
-    <p>আপনার প্রয়োজনীয় পণ্য, এখন এক জায়গায়</p>
+</head>
+<body>
+<header>
+  <a class="brand" href="./index.html"><div class="logo">📚</div><div><span class="brand-name">নির্ঝর লাইব্রেরী</span><span class="brand-tag">শপ</span></div></a>
+  <div class="header-actions">
+    <button class="header-btn" id="themeBtn" type="button" aria-label="থিম পরিবর্তন" title="ডার্ক মোড">☾</button>
+    <a class="header-btn" href="./product1.html">🛒 পণ্য</a>
+    <button class="menu-btn" id="menuBtn" type="button" aria-label="মেনু খুলুন" aria-expanded="false">☰</button>
+  </div>
+  <nav class="mobile-menu" id="mobileMenu"><a href="./index.html">🏠 হোম</a><a href="./product1.html">📚 পণ্য দেখুন</a><a href="#features">✨ আমাদের সুবিধা</a><a href="#reviews">⭐ মতামত ও রিভিউ</a><a href="#contact">📞 যোগাযোগ</a></nav>
 </header>
-
+<section class="hero"><div class="hero-inner">
+  <div class="pill"><span class="pill-dot"></span>বই ও স্টেশনারি সামগ্রীর বিশ্বস্ত ঠিকানা</div>
+  <h1>নির্ঝর লাইব্রেরীতে<br><span>আপনার পছন্দের পণ্য খুঁজে নিন</span></h1>
+  <p class="hero-description">বই, খাতা, কলমসহ প্রয়োজনীয় স্টেশনারি সামগ্রীর তথ্য সহজেই জেনে নিন। পণ্যের নাম/আইডি দিয়ে খুঁজুন অথবা QR কোড স্ক্যান করে পণ্যের বিস্তারিত দেখুন।</p>
+  <form class="search-box" id="productSearch">
+    <span class="search-icon">⌕</span>
+    <input type="search" id="searchInput" placeholder="পণ্যের নাম বা আইডি লিখুন..." aria-label="পণ্যের নাম বা আইডি">
+    <button type="submit" class="primary-btn">খুঁজুন</button>
+    <button type="button" id="scanBtn" class="scan-btn" aria-label="QR কোড স্ক্যান করুন"><span>▦</span><span class="scan-label">QR স্ক্যান</span></button>
+  </form>
+</div></section>
 <main>
-    <section class="welcome-card">
-
-        <div class="welcome-icon">🛍️</div>
-
-        <h2>নির্ঝর লাইব্রেরীতে আপনাকে স্বাগতম</h2>
-
-        <p class="description">
-            আপনার পছন্দের পণ্যের গায়ে থাকা কিউআর কোড
-            স্ক্যান করে পণ্যের ছবি, মূল্য, ছাড় এবং
-            অন্যান্য তথ্য সহজেই দেখে নিন।
-        </p>
-
-        <div class="features">
-            <div class="feature">
-                <span class="feature-icon">📱</span>
-                সহজে তথ্য দেখুন
-            </div>
-
-            <div class="feature">
-                <span class="feature-icon">🏷️</span>
-                মূল্য ও ছাড় জানুন
-            </div>
-
-            <div class="feature">
-                <span class="feature-icon">🛒</span>
-                সহজে অর্ডার করুন
-            </div>
-        </div>
-
-        <a class="buy-button" href="./product1.html">
-            পণ্যের পেজে যান
-        </a>
-
-        <div class="note">
-            পণ্যের বিস্তারিত তথ্য দেখতে পণ্যের গায়ে থাকা
-            কিউআর কোড স্ক্যান করুন।
-        </div>
-
-    </section>
+  <section class="features" id="features">
+    <div class="feature"><span class="feature-icon">📚</span><div class="feature-text"><strong>বই ও খাতা</strong>প্রয়োজনীয় সামগ্রী</div></div>
+    <div class="feature"><span class="feature-icon">🏷️</span><div class="feature-text"><strong>মূল্য ও ছাড়</strong>পণ্যের তথ্য জানুন</div></div>
+    <div class="feature"><span class="feature-icon">📱</span><div class="feature-text"><strong>QR কোড</strong>স্ক্যান করে দেখুন</div></div>
+  </section>
+  <section class="products-section">
+    <span class="section-label">✓ আমাদের পণ্য</span><h2 class="section-title">নির্ঝর লাইব্রেরীর পণ্যসমূহ</h2>
+    <p class="section-description">আপনার প্রয়োজনীয় বই ও স্টেশনারি সামগ্রীর ছবি, দাম, ছাড় এবং স্টক দেখতে নিচের বাটনে ক্লিক করুন।</p>
+    <div class="product-panel"><div class="product-info"><div class="product-emoji">📖</div><h3>পণ্যের বিস্তারিত দেখুন</h3><p>পণ্যের ছবি, মূল্য, ছাড় এবং অন্যান্য তথ্য দেখতে পণ্যের পেজে প্রবেশ করুন।</p></div><a class="primary-btn" href="./product1.html">পণ্য দেখুন ↗</a></div>
+    <div class="note">💡 <strong>সহজ নির্দেশনা:</strong> পণ্যের গায়ে থাকা QR কোড স্ক্যান করুন। QR কোডে পণ্যের আইডি অথবা এই সাইটের পণ্যের লিংক থাকতে হবে।</div>
+  </section>
+  <section class="reviews-section" id="reviews" aria-labelledby="reviewsHeading">
+    <h2 id="reviewsHeading">⭐ আপনার মতামত ও রিভিউ</h2>
+    <p class="reviews-intro">নির্ঝর লাইব্রেরী সম্পর্কে আপনার অভিজ্ঞতা ও পরামর্শ আমাদের জানান।</p>
+    <form id="reviewForm" class="review-form">
+      <div class="review-field"><label for="reviewName">আপনার নাম</label><input id="reviewName" name="name" maxlength="60" required placeholder="নাম লিখুন"></div>
+      <div class="review-field"><label for="reviewRating">রেটিং</label><select id="reviewRating" name="rating" required><option value="5">★★★★★ — চমৎকার</option><option value="4">★★★★☆ — ভালো</option><option value="3">★★★☆☆ — মোটামুটি</option><option value="2">★★☆☆☆ — উন্নতি প্রয়োজন</option><option value="1">★☆☆☆☆ — সন্তুষ্ট নই</option></select></div>
+      <div class="review-field full"><label for="reviewMessage">আপনার মতামত</label><textarea id="reviewMessage" name="message" maxlength="700" required placeholder="আপনার মতামত লিখুন..."></textarea></div>
+      <div class="review-field full"><button class="primary-btn" type="submit">মতামত জমা দিন</button></div>
+    </form>
+    <p class="review-notice">নোট: আপাতত রিভিউ এই ব্রাউজার/ডিভাইসেই সংরক্ষিত হবে। সব গ্রাহকের রিভিউ অনলাইনে একসঙ্গে দেখাতে Firebase-এ রিভিউ সংরক্ষণের ব্যবস্থা যুক্ত করতে হবে।</p>
+    <div class="reviews-list" id="reviewsList" aria-live="polite"><div class="review-empty">এখনো কোনো রিভিউ নেই। আপনার মতামত প্রথমে যোগ করুন।</div></div>
+  </section>
 </main>
-
-<footer>
-    <strong>নির্ঝর লাইব্রেরী</strong><br>
-    আপনার বিশ্বস্ত বই ও স্টেশনারি সামগ্রীর ঠিকানা<br>
-    © ২০২৬ নির্ঝর লাইব্রেরী — সর্বস্বত্ব সংরক্ষিত RAKIBUL HASAN
+<footer id="contact">
+  <strong>📚 নির্ঝর লাইব্রেরী</strong><br>আপনার বিশ্বস্ত বই ও স্টেশনারি সামগ্রীর ঠিকানা
+  <section class="contact-wrap" aria-labelledby="contactHeading">
+    <h2 class="contact-heading" id="contactHeading">📞 যোগাযোগ করুন</h2>
+    <div class="contact-grid">
+      <article class="contact-card">
+        <span class="contact-role">মালিক · Proprietor</span>
+        <h3 class="contact-name">MD. ABUL KASHEM</h3>
+        <a class="contact-phone" href="tel:01812479035" aria-label="MD. ABUL KASHEM-কে ফোন করুন">☎ 01812479035</a><a class="whatsapp-link" href="https://wa.me/8801812479035" target="_blank" rel="noopener noreferrer" aria-label="MD. ABUL KASHEM-কে WhatsApp করুন">☘ WhatsApp</a>
+      </article>
+      <article class="contact-card">
+        <span class="contact-role">ম্যানেজার · Manager</span>
+        <h3 class="contact-name">MD. MOSHAROF HOSSAIN</h3>
+        <a class="contact-phone" href="tel:01829307148" aria-label="MD. MOSHAROF HOSSAIN-কে ফোন করুন">☎ 01829307148</a><a class="whatsapp-link" href="https://wa.me/8801829307148" target="_blank" rel="noopener noreferrer" aria-label="MD. MOSHAROF HOSSAIN-কে WhatsApp করুন">☘ WhatsApp</a>
+      </article>
+      <article class="contact-card">
+        <span class="contact-role">কম্পিউটার অপারেটর · Computer Operator</span>
+        <h3 class="contact-name">RAKIBUL HASAN</h3>
+        <a class="contact-phone" href="tel:01572085889" aria-label="RAKIBUL HASAN-কে ফোন করুন">☎ 01572085889</a><a class="whatsapp-link" href="https://wa.me/8801572085889" target="_blank" rel="noopener noreferrer" aria-label="RAKIBUL HASAN-কে WhatsApp করুন">☘ WhatsApp</a>
+      </article>
+    </div>
+  </section>
+  © ২০২৬ নির্ঝর লাইব্রেরী — সর্বস্বত্ব সংরক্ষিত
+  (RAKIBUL HASAN)
 </footer>
-
+<div id="scannerModal" class="scanner-modal" role="dialog" aria-modal="true" aria-labelledby="scannerTitle" hidden>
+  <div class="scanner-box"><button type="button" id="closeScanner" class="scanner-close" aria-label="বন্ধ করুন">✕</button><h2 id="scannerTitle">📷 পণ্যের QR কোড স্ক্যান করুন</h2><p>ক্যামেরার সামনে QR কোডটি ধরুন।</p><div id="qr-reader"></div><p id="scannerStatus" role="status">স্ক্যানার প্রস্তুত হচ্ছে...</p><div class="scanner-actions"><button type="button" id="stopScanner" class="secondary-btn">ক্যামেরা বন্ধ করুন</button></div></div>
+</div>
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+const menuBtn = $('menuBtn'), mobileMenu = $('mobileMenu'), themeBtn = $('themeBtn');
+menuBtn.addEventListener('click', () => { const open = mobileMenu.classList.toggle('open'); menuBtn.setAttribute('aria-expanded', String(open)); menuBtn.textContent = open ? '✕' : '☰'; });
+mobileMenu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => { mobileMenu.classList.remove('open'); menuBtn.setAttribute('aria-expanded','false'); menuBtn.textContent='☰'; }));
+function setTheme(dark){document.body.classList.toggle('dark',dark);themeBtn.textContent=dark?'☀':'☾';themeBtn.title=dark?'লাইট মোড':'ডার্ক মোড';document.querySelector('meta[name="theme-color"]').setAttribute('content',dark?'#19151b':'#fff0f5');}
+try{const savedTheme=localStorage.getItem('nirjhor-theme');setTheme(savedTheme==='dark');}catch(e){setTheme(false);}
+themeBtn.addEventListener('click',()=>{const dark=!document.body.classList.contains('dark');setTheme(dark);try{localStorage.setItem('nirjhor-theme',dark?'dark':'light');}catch(e){}});
+// product1.html এই কোডে id প্যারামিটার নিয়ে Firebase থেকে পণ্য খুঁজে। তাই সার্চে আইডি ব্যবহার করুন।
+$('productSearch').addEventListener('submit', event => { event.preventDefault(); const q=$('searchInput').value.trim(); if(!q){location.href='./product1.html';return;} location.href='./product1.html?id='+encodeURIComponent(q); });
+const modal=$('scannerModal'), statusText=$('scannerStatus'); let scanner=null, starting=false, handled=false;
+async function stopScanner(){ if(scanner){ try{if(scanner.isScanning) await scanner.stop();}catch(e){console.warn('Camera stop:',e);} try{scanner.clear();}catch(e){} scanner=null;} starting=false; }
+async function closeScanner(){ modal.hidden=true; await stopScanner(); }
+$('scanBtn').addEventListener('click', async()=>{
+ if(starting||scanner)return;
+ if(!window.isSecureContext){alert('ক্যামেরা ব্যবহারের জন্য HTTPS ওয়েবসাইট খুলুন, অথবা কম্পিউটারে localhost ব্যবহার করুন।');return;}
+ if(typeof Html5Qrcode==='undefined'){alert('QR স্ক্যানার লোড হয়নি। ইন্টারনেট সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।');return;}
+ modal.hidden=false; statusText.textContent='ক্যামেরা চালু হচ্ছে...'; starting=true; handled=false;
+ try{
+  scanner=new Html5Qrcode('qr-reader');
+  await scanner.start({facingMode:'environment'},{fps:10,qrbox:{width:230,height:230},aspectRatio:1},async decodedText=>{
+   if(handled)return; handled=true; statusText.textContent='QR কোড পাওয়া গেছে!'; await stopScanner(); modal.hidden=true;
+   let destination='./product1.html?id='+encodeURIComponent(decodedText);
+   // QR-এ একই সাইটের product1.html?id=... লিংক থাকলে সেটি সরাসরি খুলবে।
+   try{const url=new URL(decodedText); if(url.origin===location.origin){ if(url.pathname.endsWith('/product1.html') && url.searchParams.get('id')) destination=url.href; else if(url.pathname.endsWith('/product1.html')) destination=url.href; }}catch(e){/* QR-এ শুধু productId থাকলে সেটি ব্যবহার হবে */}
+   location.href=destination;
+  },()=>{});
+  statusText.textContent='ক্যামেরার সামনে পণ্যের QR কোড ধরুন।';
+ }catch(error){await stopScanner();statusText.textContent='ক্যামেরা চালু করা যায়নি। ব্রাউজারে ক্যামেরার অনুমতি দিন এবং অন্য অ্যাপ ক্যামেরা ব্যবহার করছে কি না দেখুন।';console.error('QR scanner error:',error);}
+ finally{starting=false;}
+});
+$('closeScanner').addEventListener('click',closeScanner); $('stopScanner').addEventListener('click',closeScanner); modal.addEventListener('click',event=>{if(event.target===modal)closeScanner();});
+document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!modal.hidden)closeScanner();});
+// Reviews are kept in this browser until Firebase-backed public review storage is configured.
+const reviewForm=$('reviewForm'), reviewsList=$('reviewsList');
+function readReviews(){try{return JSON.parse(localStorage.getItem('nirjhor-reviews')||'[]').slice(0,50);}catch(e){return [];}}
+function renderReviews(){const items=readReviews();if(!items.length){reviewsList.innerHTML='<div class="review-empty">এখনো কোনো রিভিউ নেই। আপনার মতামত প্রথমে যোগ করুন।</div>';return;}reviewsList.innerHTML=items.map(item=>'<article class="review-item"><strong>'+escapeReview(item.name)+'</strong><div class="review-stars" aria-label="রেটিং '+item.rating+' এর মধ্যে ৫">'+'★'.repeat(item.rating)+'☆'.repeat(5-item.rating)+'</div><p>'+escapeReview(item.message)+'</p></article>').join('');}
+function escapeReview(value){return String(value).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));}
+reviewForm.addEventListener('submit',event=>{event.preventDefault();const name=$('reviewName').value.trim(),message=$('reviewMessage').value.trim(),rating=Number($('reviewRating').value);if(!name||!message||rating<1||rating>5)return;const items=readReviews();items.unshift({name,message,rating,createdAt:new Date().toISOString()});try{localStorage.setItem('nirjhor-reviews',JSON.stringify(items.slice(0,50)));reviewForm.reset();renderReviews();alert('আপনার মতামত এই ডিভাইসে সংরক্ষণ করা হয়েছে।');}catch(e){alert('এই ব্রাউজারে মতামত সংরক্ষণ করা যায়নি।');}});
+renderReviews();
+</script>
 </body>
 </html>
