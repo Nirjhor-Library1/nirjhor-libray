@@ -12,8 +12,9 @@ body{margin:0;font-family:"Noto Sans Bengali","SolaimanLipi","Vrinda",Arial,sans
 header{background:linear-gradient(135deg,#0755b5,#1685e8);color:white;text-align:center;padding:22px 15px;box-shadow:0 4px 15px #004aa02e;position:sticky;top:0;z-index:100}
 header h1{margin:0 0 5px;font-size:27px}
 header p{margin:0;color:#eaf4ff;font-size:14px}
-.top-bar{width:94%;max-width:900px;margin:15px auto 0;display:flex;justify-content:flex-end}
-.cart-button{border:0;background:white;color:#0755b5;padding:10px 16px;border-radius:10px;font-weight:bold;cursor:pointer}
+.top-bar{width:94%;max-width:900px;margin:15px auto 0;display:flex;align-items:center;justify-content:flex-end;gap:8px;flex-wrap:wrap}
+.home-button{margin-right:auto;border:1px solid #fff;background:transparent;color:#fff;padding:10px 14px;border-radius:10px;font-weight:bold;cursor:pointer}.home-button:hover{background:#ffffff22}
+.cart-button{border:0;background:white;color:#0755b5;padding:10px 16px;border-radius:10px;font-weight:bold;cursor:pointer}.history-button{border:1px solid #fff;background:#0755b5;color:#fff;padding:10px 14px;border-radius:10px;font-weight:bold;cursor:pointer}
 .cart-count{display:inline-flex;min-width:22px;height:22px;padding:0 5px;align-items:center;justify-content:center;background:#e53935;color:white;border-radius:50px;font-size:12px;margin-left:5px}
 main{width:94%;max-width:900px;margin:25px auto 45px}
 .loading,.message{background:white;padding:25px;border-radius:16px;text-align:center;box-shadow:0 4px 15px #23569114}
@@ -37,7 +38,7 @@ main{width:94%;max-width:900px;margin:25px auto 45px}
 .primary-button:hover{background:#064a9b}
 .primary-button:disabled{background:#999;cursor:not-allowed}
 .secondary-button{border:1px solid #075fc7;background:white;color:#075fc7}
-.cart-section,.order-section,.success-box{display:none}
+.cart-section,.order-section,.success-box,.history-section{display:none}.history-section{background:white;border-radius:20px;padding:20px;box-shadow:0 5px 22px #2356911a;border:1px solid #e0ebfa;margin-bottom:18px}.history-form{display:grid;grid-template-columns:1fr 1fr;gap:12px}.history-result{margin-top:18px}.history-card{border:1px solid #dce8f7;border-radius:12px;padding:14px;margin-top:10px;overflow-wrap:anywhere}.history-card h3{margin:0 0 8px;color:#0755b5}.history-list button{margin:5px 5px 0 0;padding:7px 10px;border:1px solid #075fc7;background:#f2f7ff;color:#0755b5;border-radius:8px;cursor:pointer}.back-button{margin-bottom:12px;width:auto;padding:9px 14px}.memo-button{display:none}.form-help{font-size:12px;color:#65758b;margin-top:5px}.phone-error{color:#c62828;font-size:13px;margin-top:5px}
 .section-title{color:#0755b5;margin:0 0 18px;font-size:24px}
 .cart-item{display:flex;gap:14px;padding:15px 0;border-bottom:1px solid #e5edf7}
 .cart-item-image{width:75px;height:75px;object-fit:contain;border-radius:10px;background:#f4f8ff;flex-shrink:0}
@@ -70,7 +71,7 @@ main{width:94%;max-width:900px;margin:25px auto 45px}
 .success-box h2{color:#168447}
 .order-number{background:#f2f7ff;padding:12px;border-radius:10px;margin:15px 0;font-weight:bold;overflow-wrap:anywhere}
 footer{text-align:center;background:white;border-top:1px solid #e0eafa;padding:22px 12px;color:#65758b;font-size:14px;line-height:1.8}
-@media(max-width:600px){
+@media(max-width:600px){.history-form{grid-template-columns:1fr}
 header h1{font-size:24px}
 main{width:92%}
 .product-card,.cart-section,.order-section{padding:15px}
@@ -80,6 +81,7 @@ main{width:92%}
 .summary-row{font-size:14px}
 .summary-total{font-size:18px}
 }
+
 </style>
 </head>
 
@@ -88,6 +90,8 @@ main{width:92%}
     <h1>নির্ঝর লাইব্রেরী</h1>
     <p>আপনার প্রয়োজনীয় পণ্য, এখন এক জায়গায়</p>
     <div class="top-bar">
+        <button type="button" class="home-button" id="floatingHomeButton" aria-label="হোম পেজে যান">🏠 Home</button>
+        <button class="history-button" id="historyButton">📋 অর্ডার দেখুন</button>
         <button class="cart-button" id="cartButton">
             🛒 ঝুড়ি <span class="cart-count" id="cartCount">0</span>
         </button>
@@ -95,6 +99,7 @@ main{width:92%}
 </header>
 
 <main>
+    <button class="secondary-button back-button" id="backToProductsButton" style="display:none">← পণ্যের পেজে ফিরে যান</button>
     <div id="loading" class="loading">পণ্য লোড হচ্ছে...</div>
     <div id="message" class="message" style="display:none"></div>
     <div id="productArea"></div>
@@ -118,13 +123,14 @@ main{width:92%}
         </div>
 
         <div class="form-group">
-            <label for="customerPhone">মোবাইল নম্বর *</label>
-            <input id="customerPhone" type="tel" placeholder="মোবাইল নম্বর লিখুন">
+            <label for="customerPhone">মোবাইল নম্বর (১১ ডিজিট) *</label>
+            <input id="customerPhone" type="tel" inputmode="numeric" maxlength="11" pattern="[0-9০-৯]{11}" placeholder="01XXXXXXXXX" autocomplete="tel">
+            <div class="form-help">বাংলাদেশি ১১ ডিজিটের নম্বর লিখুন।</div>
         </div>
 
         <div class="form-group">
-            <label for="customerAddress">ঠিকানা *</label>
-            <textarea id="customerAddress" placeholder="আপনার ঠিকানা লিখুন"></textarea>
+            <label for="customerAddress">ঠিকানা (ঐচ্ছিক)</label>
+            <textarea id="customerAddress" placeholder="আপনার ঠিকানা লিখুন (না দিলেও হবে)"></textarea>
         </div>
 
         <div class="form-group">
@@ -149,11 +155,24 @@ main{width:92%}
         <p>আপনার অর্ডারটি দোকানে পাঠানো হয়েছে। দোকান থেকে যাচাই করে অর্ডার নিশ্চিত করা হবে।</p>
         <div class="order-number">অর্ডার নম্বর: <span id="orderNumber"></span></div>
         <div id="liveOrderSummary"></div>
+        <div id="successMemoActions"></div>
         <p id="liveOrderNote" class="admin-note">
             অ্যাডমিন আপনার অর্ডার যাচাই করে অতিরিক্ত ছাড় নির্ধারণ করতে পারবেন।
         </p>
         <button class="primary-button" id="homeButton">পণ্যের পেজে ফিরে যান</button>
     </div>
+
+    <section id="historySection" class="history-section">
+        <h2 class="section-title">📋 আগের অর্ডার দেখুন</h2>
+        <p>অর্ডার দেওয়ার সময় ব্যবহৃত ১১ ডিজিটের মোবাইল নম্বর এবং অর্ডার দেওয়ার তারিখ দিয়ে খুঁজুন। একই দিনে একাধিক অর্ডার থাকলে সবগুলো দেখাবে।</p>
+        <form id="historyForm" class="history-form">
+            <div class="form-group" style="margin:0"><label for="historyPhone">মোবাইল নম্বর (১১ ডিজিট) *</label><input id="historyPhone" type="tel" inputmode="numeric" maxlength="11" pattern="[0-9০-৯]{11}" required placeholder="01XXXXXXXXX"></div>
+            <div class="form-group" style="margin:0"><label for="historyDate">অর্ডার দেওয়ার তারিখ *</label><input id="historyDate" type="date" required></div>
+            <button class="primary-button" type="submit" style="grid-column:1/-1;margin-top:0">অর্ডার খুঁজুন</button>
+        </form>
+        <div id="historyResult" class="history-result" aria-live="polite"></div>
+        <button class="secondary-button" id="closeHistoryButton">← পণ্যের পেজে ফিরে যান</button>
+    </section>
 </main>
 
 <footer>
@@ -165,7 +184,7 @@ main{width:92%}
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
 import {
-    getFirestore, collection, getDocs, doc, addDoc,
+    getFirestore, collection, getDocs, doc, addDoc, getDoc, query, where,
     serverTimestamp, onSnapshot
 } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
 
@@ -194,8 +213,119 @@ const orderSection = $("orderSection");
 const orderSummary = $("orderSummary");
 const successBox = $("successBox");
 const orderNumber = $("orderNumber");
+const historySection = $("historySection");
+const historyResult = $("historyResult");
+const backToProductsButton = $("backToProductsButton");
+let currentSuccessOrder = null;
+let successOrderUnsubscribe = null;
 
-const requestedProductId = new URLSearchParams(location.search).get("id")?.trim();
+function normalizePhone(value) {
+    return String(value || "").replace(/[٠-٩۰-۹]/g, ch => {
+        const arabic = "٠١٢٣٤٥٦٧٨٩", bengali = "০১২৩৪৫৬৭৮৯";
+        if (arabic.includes(ch)) return String(arabic.indexOf(ch));
+        if (bengali.includes(ch)) return String(bengali.indexOf(ch));
+        return ch;
+    }).replace(/\D/g, "");
+}
+function phoneIsValid(value) { return /^\d{11}$/.test(normalizePhone(value)); }
+function rememberOrder(id) {
+    try {
+        const list = JSON.parse(localStorage.getItem("nirjhorOrderHistory") || "[]");
+        const next = [String(id), ...list.filter(x => String(x) !== String(id))].slice(0, 15);
+        localStorage.setItem("nirjhorOrderHistory", JSON.stringify(next));
+    } catch (e) { console.warn("Order history storage unavailable", e); }
+    renderSavedOrders();
+}
+function renderSavedOrders() {
+    // নতুন খোঁজার পদ্ধতিতে অর্ডার নম্বর লিখতে হয় না; ফোন নম্বর ও তারিখই যথেষ্ট।
+}
+function formatDate(value) {
+    try {
+        const d = value?.toDate ? value.toDate() : (value ? new Date(value) : null);
+        return d && !Number.isNaN(d.getTime()) ? d.toLocaleString("bn-BD", {dateStyle:"medium", timeStyle:"short"}) : "তারিখ পাওয়া যায়নি";
+    } catch { return "তারিখ পাওয়া যায়নি"; }
+}
+function orderStatusLabel(order) {
+    const raw = String(order.orderStatus || order.status || "pending").toLowerCase();
+    if (/(confirm|approved|accepted|processing|প্রক্রিয়াধীন|অনুমোদিত|কনফার্ম)/i.test(raw)) return "অনুমোদিত / প্রক্রিয়াধীন";
+    if (/(deliver|সম্পন্ন|delivered)/i.test(raw)) return "ডেলিভারি সম্পন্ন";
+    if (/(cancel|বাতিল)/i.test(raw)) return "বাতিল";
+    return "অপেক্ষমাণ";
+}
+function orderIsConfirmed(order) {
+    const raw = `${order.orderStatus || ""} ${order.status || ""}`.toLowerCase();
+    return /(confirm|approved|accepted|processing|প্রক্রিয়াধীন|অনুমোদিত|কনফার্ম)/i.test(raw);
+}
+function orderAdminName(order) {
+    const raw = order.approvedByName || order.approvedBy || order.confirmedByName || order.confirmedBy || order.adminName || order.approvedAdmin || "অ্যাডমিন";
+    const normalized = String(raw).toLowerCase();
+    if (normalized.includes("rakibul") || raw === "রাকিবুল") return "রাকিবুল";
+    if (normalized.includes("kashem") || raw === "কাশেম") return "কাশেম";
+    if (normalized.includes("mosharof") || raw === "মোশার্ফ") return "মোশার্ফ";
+    return raw;
+}
+function renderMemoButton(order, orderId, targetId) {
+    const el = $(targetId); if (!el) return;
+    el.innerHTML = orderIsConfirmed(order) ? `<button type="button" class="primary-button" id="printMemo_${targetId}">🖨️ অর্ডার মেমো প্রিন্ট করুন</button>` : `<p class="admin-note">অর্ডার অ্যাডমিন অনুমোদন করলে মেমো প্রিন্টের বাটন দেখা যাবে।</p>`;
+    const btn = $("printMemo_" + targetId);
+    if (btn) btn.addEventListener("click", () => printOrderMemo(order, orderId));
+}
+function printOrderMemo(order, orderId) {
+    const items = Array.isArray(order.items) ? order.items : [];
+    const originalTotal = Number(order.originalTotal ?? order.totalPrice ?? order.subtotal ?? 0);
+    const subtotal = Number(order.subtotal ?? order.totalPrice ?? 0);
+    const productDiscount = Number(order.productDiscountTotal ?? Math.max(0, originalTotal - subtotal));
+    const adminDiscount = Number(order.adminExtraDiscount ?? order.extraDiscount ?? order.additionalDiscount ?? order.adminDiscount ?? order.discountAmount ?? 0);
+    const finalTotal = Math.max(0, Math.round((originalTotal - productDiscount - adminDiscount) * 100) / 100);
+    const rows = items.map((item, i) => `<tr><td>${i+1}</td><td>${escapeHTML(item.productName || "পণ্য")}</td><td>${money(item.quantity || 0)}</td><td>${money(item.mrp ?? item.originalPrice ?? item.sellingPrice ?? 0)}</td><td>${money(Number(item.mrp ?? item.originalPrice ?? item.sellingPrice ?? 0) * Number(item.quantity || 0))}</td></tr>`).join("");
+    const adminName = orderAdminName(order);
+    const popup = requestedMemoId ? window : window.open("", "_blank", "width=900,height=700");
+    if (!popup) { alert("মেমো প্রিন্টের উইন্ডো খুলতে পারেনি। ব্রাউজারে pop-up অনুমতি দিন।"); return; }
+    popup.document.write(`<!doctype html><html lang="bn"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>অর্ডার মেমো - ${escapeHTML(orderId)}</title><link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600&family=Noto+Sans+Bengali:wght@400;500;600;700&display=swap" rel="stylesheet"><style>
+    *{box-sizing:border-box}html,body{margin:0;padding:0;font-family:'Noto Sans Bengali',Arial,sans-serif;color:#073879;background:#fff}body{font-size:8pt;line-height:1.28}.memo-sheet{position:relative;width:148.5mm;height:210mm;padding:5mm 5.5mm 6mm;overflow:hidden;background:linear-gradient(155deg,#fff 0%,#f7fbff 72%,#fff 100%)}.memo-sheet:before{content:"";position:absolute;left:0;top:0;width:100%;height:5mm;background:linear-gradient(170deg,#034a9c,#087fe2 70%,#36b8ff);clip-path:polygon(0 0,100% 0,100% 55%,70% 70%,35% 50%,0 100%)}.memo-sheet:after{content:"";position:absolute;left:0;bottom:0;width:100%;height:13mm;background:linear-gradient(15deg,#003c88,#0876d7);clip-path:polygon(0 0,25% 45%,62% 55%,100% 0,100% 100%,0 100%)}.memo{position:relative;z-index:1;width:100%;height:100%;display:flex;flex-direction:column}.head{display:grid;grid-template-columns:1.65fr 1fr;gap:3mm;align-items:center;border-bottom:1px solid #0755b5;padding:4mm 1mm 2mm}.brand{display:flex;align-items:center;gap:2mm}.logo{width:18mm;flex-shrink:0;color:#0755b5;font-size:22pt;line-height:1}.brand h1{font-size:20pt;line-height:1.08;color:#0755b5;margin:0;letter-spacing:-.7px;white-space:nowrap}.tag{font-size:8pt;color:#e00083;text-align:center;margin-top:1mm}.contact{border-left:1px solid #0755b5;padding-left:3mm;font-size:6.3pt;line-height:1.45;color:#082f69}.titleline{display:flex;align-items:center;gap:3mm;margin:2.5mm 0}.titleline:before,.titleline:after{content:"";height:1px;background:#0755b5;flex:1}.title{background:linear-gradient(120deg,#064ba5,#0865c7);color:white;border-radius:4mm;text-align:center;padding:1mm 7mm;font-size:19pt;font-weight:700;white-space:nowrap}.top-info{display:grid;grid-template-columns:1fr 34mm;gap:4mm;align-items:stretch}.info{border:1px solid #acd8ff;border-radius:3mm;background:linear-gradient(110deg,#f4faff,#eaf5ff);padding:2.5mm 3mm;display:grid;grid-template-columns:25mm 3mm 1fr;gap:1.3mm 1mm;font-size:8pt;align-content:center}.info .colon{text-align:center}.qrbox{border:1px solid #0755b5;border-radius:3mm;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2mm;text-align:center;font-size:7pt;line-height:1.25}.qrbox #memoQr{width:25mm;height:25mm;display:flex;align-items:center;justify-content:center}.qrbox #memoQr img,.qrbox #memoQr canvas{width:25mm!important;height:25mm!important;max-width:100%}.items{width:100%;border-collapse:collapse;margin-top:3mm;font-size:7.3pt;table-layout:fixed}.items th{background:linear-gradient(100deg,#0755b5,#0874d6);color:#fff;font-weight:700}.items th,.items td{border:1px solid #a8d6ff;padding:1.6mm 1.3mm;text-align:center;overflow-wrap:anywhere}.items td:nth-child(2){text-align:left}.items th:nth-child(1){width:10%}.items th:nth-child(2){width:39%}.items th:nth-child(3){width:13%}.items th:nth-child(4){width:19%}.items th:nth-child(5){width:19%}.discount-total{display:grid;grid-template-columns:1.2fr 1fr;gap:3mm;margin-top:3mm}.discount-card{border:1px solid #f2b9e7;background:#fff7fd;border-radius:3mm;padding:2.5mm;color:#d00080;font-size:8pt}.discount-card div{display:flex;justify-content:space-between;gap:2mm;padding:1mm}.totals{border:1px solid #acd8ff;background:#f2f9ff;border-radius:3mm;padding:1.5mm 2mm;font-size:8pt}.totals div{display:flex;justify-content:space-between;gap:2mm;padding:1mm}.grand{background:linear-gradient(100deg,#0755b5,#0874d6);color:#fff;border-radius:2mm;font-weight:700;font-size:10pt}.status{margin-top:2.5mm;border:1px solid #9ce7c4;background:#effcf5;color:#078345;border-radius:3mm;padding:2mm 3mm;font-weight:700;font-size:8pt}.notes{margin-top:2.5mm;border:1px solid #acd8ff;background:#f1f8ff;border-radius:3mm;padding:2mm 3mm;font-size:7pt;line-height:1.35}.notes strong{font-size:8pt}.bottom{display:flex;justify-content:space-between;align-items:flex-end;gap:4mm;margin-top:auto;padding:3mm 2mm 5mm}.blessing{text-align:center;line-height:1.5;border-top:1px solid #0755b5;border-bottom:1px solid #0755b5;padding:2mm 1mm;flex:1;font-weight:700;font-size:8pt;color:#0755b5}.signature{text-align:center;width:37mm;flex-shrink:0}.hand{font-family:'Caveat','Segoe Script',cursive;font-size:19pt;font-style:italic;border-bottom:1px solid #0755b5;padding:0 2mm 1mm;color:#073879}.sig-label{margin-top:1mm;font-weight:700;font-size:7.5pt}.small{font-size:6.5pt}.blank-sheet{display:none}@page{size:A4 landscape;margin:0}@media print{html,body{width:297mm;height:210mm;margin:0;padding:0;print-color-adjust:exact;-webkit-print-color-adjust:exact}.memo-sheet{position:absolute;left:0;top:0;width:148.5mm;height:210mm;padding:5mm 5.5mm 6mm;overflow:hidden}.blank-sheet{display:block;position:absolute;left:148.5mm;top:0;width:148.5mm;height:210mm;background:#fff}.no-print{display:none!important}}@media screen{.memo-sheet{margin:0 auto;box-shadow:0 0 0 1px #ddd}}
+    </style></head><body><div class="memo-sheet"><div class="memo"><div class="head"><div class="brand"><div class="logo"><svg viewBox="0 0 100 80" width="54" height="44" aria-label="লাইব্রেরী লোগো"><path d="M8 8 Q27 2 47 20 L47 70 Q28 52 8 58 Z" fill="#0879d9"/><path d="M92 8 Q73 2 53 20 L53 70 Q72 52 92 58 Z" fill="#e51c8b"/><path d="M2 18 L2 65 Q26 60 47 78 L47 72 Q26 54 2 58 Z" fill="#d4148e"/><path d="M98 18 L98 65 Q74 60 53 78 L53 72 Q74 54 98 58 Z" fill="#34277f"/></svg></div><div><h1>নির্ঝর লাইব্রেরী</h1><div class="tag">— বই হোক জীবনের অনুপ্রেরণা —</div></div></div><div class="contact">📍 কছিম উদ্দিন রোড,<br>কালিয়াকৈর বাজার, কালিয়াকৈর, গাজীপুর<br>☎ 01812479035 (প্রোপ্রাইটর)<br>☎ 01829307148 (ম্যানেজার)<br>☎ 01572085889 (কম্পিউটার অপারেটর)<br>✉ nc.nc1482@gmail.com</div></div><div class="titleline"><div class="title">অর্ডার মেমো</div></div><div class="top-info"><div class="info"><b>অর্ডার নম্বর</b><span class="colon">:</span><span>${escapeHTML(orderId)}</span><b>তারিখ</b><span class="colon">:</span><span>${escapeHTML(formatDate(order.createdAt))}</span><b>গ্রাহকের নাম</b><span class="colon">:</span><span>${escapeHTML(order.customerName || "—")}</span><b>মোবাইল নম্বর</b><span class="colon">:</span><span>${escapeHTML(order.phone || "—")}</span><b>ঠিকানা</b><span class="colon">:</span><span>${escapeHTML(String(order.address || "").trim() || "N/A")}</span><b>পেমেন্ট মাধ্যম</b><span class="colon">:</span><span>${escapeHTML(order.paymentMethod === "online" ? "অনলাইন পেমেন্ট" : "ক্যাশ অন ডেলিভারি")}</span></div><div class="qrbox"><div id="memoQr"></div><b>অর্ডার যাচাই করতে<br>QR স্ক্যান করুন</b></div></div><table class="items"><thead><tr><th>ক্রম</th><th>পণ্যের নাম</th><th>পরিমাণ</th><th>একক মূল্য (৳)</th><th>মোট মূল্য (৳)</th></tr></thead><tbody>${rows}</tbody></table><div class="discount-total"><div class="discount-card"><div><b>মোট মূল্যের উপর ছাড়</b><strong>${money(order.overallDiscountPercent ?? order.discountPercent ?? 0)}%</strong></div><div><b>পণ্যের ছাড়</b><strong>৳ ${money(productDiscount)}</strong></div><div><b>অ্যাডমিন ছাড়</b><strong>৳ ${money(adminDiscount)}</strong></div></div><div class="totals"><div><b>মোট মূল্য</b><strong>৳ ${money(originalTotal)}</strong></div><div><b>ছাড়</b><strong>−৳ ${money(productDiscount + adminDiscount)}</strong></div><div class="grand"><b>চূড়ান্ত মূল্য</b><strong>৳ ${money(finalTotal)}</strong></div></div></div><div class="status">✓ &nbsp; অর্ডার অবস্থা &nbsp; : &nbsp; ${escapeHTML(orderStatusLabel(order))}</div><div class="notes"><strong>ℹ গুরুত্বপূর্ণ তথ্য</strong><br>• এই মেমোটি আপনার অর্ডারের প্রমাণ হিসেবে সংরক্ষণ করুন।<br>• কোনো সমস্যা হলে আমাদের সাথে যোগাযোগ করুন।</div><div class="bottom"><div class="blessing">আপনার ব্যবসায় উন্নতি কামনা করছি।<br>আল্লাহ আপনার ব্যবসায় বরকত দান করুন (আমিন)</div><div class="signature"><div class="hand">${escapeHTML(adminName)}</div><div class="sig-label">${escapeHTML(order.customerName || adminName)}</div><div class="small">এটি একটি ইলেক্ট্রনিক স্বাক্ষর</div></div></div></div></div><div class="blank-sheet"></div><script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"><\/script><script>window.addEventListener('load',()=>{try{const memoUrl=new URL("product1.html?memo="+encodeURIComponent(${JSON.stringify(String(orderId))}),window.location.href).href;new QRCode(document.getElementById("memoQr"),{text:memoUrl,width:180,height:180,correctLevel:QRCode.CorrectLevel.M});}catch(e){console.error(e)}setTimeout(()=>window.print(),700)});<\/script></body></html>`);
+    popup.document.close();
+}
+function renderOrderDetails(order, orderId, targetId) {
+    const el = $(targetId); if (!el) return;
+    const totals = {originalTotal:Number(order.originalTotal ?? order.totalPrice ?? order.subtotal ?? 0),productDiscount:Number(order.productDiscountTotal ?? 0),sellingTotal:Number(order.subtotal ?? order.totalPrice ?? 0),totalQuantity:Number(order.totalQuantity ?? (order.items||[]).reduce((n,i)=>n+Number(i.quantity||0),0))};
+    // অ্যাডমিন প্যানেলে ছাড় extraDiscount নামে সংরক্ষিত হয়;
+    // পুরোনো অর্ডারের বিকল্প ফিল্ডগুলিও সমর্থন করা হচ্ছে।
+    const adminDiscountRaw = order.adminExtraDiscount ?? order.extraDiscount ?? order.additionalDiscount ?? order.adminDiscount ?? order.discountAmount;
+    const adminDiscount = adminDiscountRaw === undefined || adminDiscountRaw === null || adminDiscountRaw === ""
+        ? null
+        : Math.max(0, Number(adminDiscountRaw) || 0);
+    el.innerHTML = `<div class="history-card"><h3>অর্ডার: ${escapeHTML(orderId)}</h3><p><b>তারিখ:</b> ${escapeHTML(formatDate(order.createdAt))}</p><p><b>অবস্থা:</b> ${escapeHTML(orderStatusLabel(order))}</p><p><b>গ্রাহক:</b> ${escapeHTML(order.customerName||"—")} · ${escapeHTML(order.phone||"—")}</p><p><b>ঠিকানা:</b> ${escapeHTML(order.address||"দেওয়া হয়নি")}</p><p><b>পণ্য:</b> ${(order.items||[]).map(i=>`${escapeHTML(i.productName||"পণ্য")} × ${money(i.quantity||0)}`).join("; ") || "তথ্য নেই"}</p><div class="cart-summary">${priceSummaryHTML(totals,adminDiscount,adminDiscount===null)}</div><div id="memoActions_${targetId}"></div></div>`;
+    renderMemoButton(order, orderId, "memoActions_"+targetId);
+}
+
+
+const pageParams = new URLSearchParams(location.search);
+const requestedMemoId = (pageParams.get("memo") || "").trim();
+if (requestedMemoId) { const floatingHome = document.getElementById("floatingHomeButton"); if (floatingHome) floatingHome.style.display = "none"; }
+let requestedProductId = (
+    pageParams.get("id") || pageParams.get("q") || ""
+).trim();
+
+// QR কোডে সরাসরি পণ্যের URL থাকলে তার id বের করা হবে।
+if (requestedProductId) {
+    try {
+        const scannedURL = new URL(requestedProductId, location.href);
+        if (
+            scannedURL.origin === location.origin &&
+            (scannedURL.searchParams.has("id") ||
+             scannedURL.searchParams.has("q"))
+        ) {
+            requestedProductId = (
+                scannedURL.searchParams.get("id") ||
+                scannedURL.searchParams.get("q") ||
+                requestedProductId
+            ).trim();
+        }
+    } catch (error) {
+        // QR কোডে শুধু পণ্যের আইডি থাকলে সেটিই ব্যবহার হবে।
+    }
+}
 
 let cart = [];
 try {
@@ -304,6 +434,19 @@ function priceSummaryHTML(totals, adminDiscount = null, isPending = true) {
 
 async function loadProducts() {
     try {
+        if (requestedMemoId) {
+            const memoSnapshot = await getDoc(doc(db, "orders", requestedMemoId));
+            document.querySelector("header").style.display = "none";
+            document.querySelector("footer").style.display = "none";
+            document.querySelector("main").style.display = "none";
+            loading.style.display = "none";
+            if (!memoSnapshot.exists()) {
+                showMessage("এই মেমোটি পাওয়া যায়নি।");
+                return;
+            }
+            printOrderMemo(memoSnapshot.data(), requestedMemoId);
+            return;
+        }
         const snapshot = await getDocs(collection(db, "products"));
         const products = snapshot.docs.map(s => ({
             ...s.data(),
@@ -324,6 +467,7 @@ async function loadProducts() {
             }
 
             showProduct(product);
+            backToProductsButton.style.display = "inline-block";
             return;
         }
 
@@ -540,6 +684,7 @@ function renderCart() {
 }
 
 function showCart() {
+    historySection.style.display = "none"; backToProductsButton.style.display = "none";
     productArea.style.display = "none";
     orderSection.style.display = "none";
     successBox.style.display = "none";
@@ -549,8 +694,55 @@ function showCart() {
 }
 
 $("cartButton").addEventListener("click", showCart);
+function showHistory() {
+    productArea.style.display = "none"; cartSection.style.display = "none"; orderSection.style.display = "none"; successBox.style.display = "none"; historySection.style.display = "block"; backToProductsButton.style.display = "none"; renderSavedOrders(); window.scrollTo({top:0,behavior:"smooth"});
+}
+$("historyButton").addEventListener("click", showHistory);
+$("closeHistoryButton").addEventListener("click", () => { historySection.style.display="none"; productArea.style.display="block"; backToProductsButton.style.display="none"; window.scrollTo({top:0,behavior:"smooth"}); });
+backToProductsButton.addEventListener("click", () => { location.href = "product1.html"; });
+$("historyForm").addEventListener("submit", async event => {
+    event.preventDefault();
+    const phone = normalizePhone($("historyPhone").value);
+    const dateValue = $("historyDate").value;
+    if (!phoneIsValid(phone)) return alert("১১ ডিজিটের সঠিক মোবাইল নম্বর লিখুন।");
+    if (!dateValue) return alert("অর্ডার দেওয়ার তারিখ নির্বাচন করুন।");
+    historyResult.innerHTML = `<div class="loading">অর্ডার খোঁজা হচ্ছে...</div>`;
+    try {
+        // ফোন নম্বর দিয়ে Firebase থেকে প্রার্থী অর্ডারগুলো আনা হয়; নির্বাচিত দিনের সঙ্গে স্থানীয়ভাবে মিলিয়ে দেখা হয়।
+        const orderQuery = query(collection(db, "orders"), where("phone", "==", phone));
+        const snap = await getDocs(orderQuery);
+        const [year, month, day] = dateValue.split("-").map(Number);
+        const dayStart = new Date(year, month - 1, day, 0, 0, 0, 0);
+        const nextDay = new Date(year, month - 1, day + 1, 0, 0, 0, 0);
+        const matches = [];
+        snap.forEach(orderDoc => {
+            const order = orderDoc.data();
+            const created = order.createdAt?.toDate ? order.createdAt.toDate() : (order.createdAt ? new Date(order.createdAt) : null);
+            if (normalizePhone(order.phone) === phone && created && created >= dayStart && created < nextDay) {
+                matches.push({id: orderDoc.id, order, created});
+            }
+        });
+        matches.sort((a,b) => b.created - a.created);
+        if (!matches.length) {
+            historyResult.innerHTML = `<div class="history-card">এই মোবাইল নম্বর ও তারিখে কোনো অর্ডার পাওয়া যায়নি। নম্বর এবং তারিখ ঠিক আছে কি না যাচাই করুন।</div>`;
+            return;
+        }
+        historyResult.innerHTML = `<p><strong>পাওয়া অর্ডার: ${matches.length}টি</strong></p>` + matches.map((m,i) => `<div id="historyOrderResult_${i}"></div>`).join("");
+        matches.forEach((m,i) => renderOrderDetails(m.order, m.id, `historyOrderResult_${i}`));
+    } catch (error) {
+        console.error("Order lookup error",error);
+        historyResult.innerHTML = `<div class="history-card">অর্ডার খোঁজা যাচ্ছে না। Firebase Security Rules-এ ফোন নম্বর দিয়ে orders query করার অনুমতি আছে কি না পরীক্ষা করুন।</div>`;
+    }
+});
+// তারিখ ইনপুটে আজকের তারিখ ডিফল্ট হিসেবে বসানো হয়।
+const historyDateInput = $("historyDate");
+if (historyDateInput && !historyDateInput.value) {
+    const now = new Date();
+    historyDateInput.value = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,"0")}-${String(now.getDate()).padStart(2,"0")}`;
+}
 
 $("continueButton").addEventListener("click", () => {
+    historySection.style.display = "none"; backToProductsButton.style.display = "none";
     cartSection.style.display = "none";
     orderSection.style.display = "none";
     productArea.style.display = "block";
@@ -558,6 +750,7 @@ $("continueButton").addEventListener("click", () => {
 });
 
 $("goOrderButton").addEventListener("click", () => {
+    historySection.style.display = "none"; backToProductsButton.style.display = "none";
     if (!cart.length) {
         alert("আপনার ঝুড়িতে কোনো পণ্য নেই।");
         return;
@@ -601,13 +794,14 @@ async function submitOrder() {
     }
 
     const customerName = $("customerName").value.trim();
-    const customerPhone = $("customerPhone").value.trim();
+    const customerPhoneInput = $("customerPhone").value.trim();
+    const customerPhone = normalizePhone(customerPhoneInput);
     const customerAddress = $("customerAddress").value.trim();
     const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked')?.value || "cash";
 
     if (!customerName) return alert("আপনার নাম লিখুন।");
-    if (!customerPhone) return alert("আপনার মোবাইল নম্বর লিখুন।");
-    if (!customerAddress) return alert("আপনার ঠিকানা লিখুন।");
+    if (!customerPhoneInput) return alert("আপনার মোবাইল নম্বর লিখুন।");
+    if (!phoneIsValid(customerPhone)) return alert("মোবাইল নম্বর অবশ্যই ১১ ডিজিটের হতে হবে। যেমন: 01********2");
 
     const submitButton = $("submitOrderButton");
     submitButton.disabled = true;
@@ -679,9 +873,13 @@ async function submitOrder() {
         saveCart();
 
         orderNumber.textContent = orderRef.id;
+        currentSuccessOrder = { ...orderData, createdAt: new Date() };
+        rememberOrder(orderRef.id);
         orderSection.style.display = "none";
         productArea.style.display = "none";
         cartSection.style.display = "none";
+        historySection.style.display = "none";
+        backToProductsButton.style.display = "none";
         successBox.style.display = "block";
 
         $("liveOrderSummary").innerHTML = `
@@ -692,6 +890,7 @@ async function submitOrder() {
 
         $("liveOrderNote").textContent =
             "অ্যাডমিন আপনার অর্ডার যাচাই করে অতিরিক্ত ছাড় নির্ধারণ করতে পারবেন। ছাড় নির্ধারিত হলে এখানে নতুন হিসাব দেখা যাবে।";
+        renderMemoButton(currentSuccessOrder, orderRef.id, "successMemoActions");
 
         window.scrollTo({top: 0, behavior: "smooth"});
 
@@ -703,6 +902,8 @@ async function submitOrder() {
             if (!snapshot.exists()) return;
 
             const order = snapshot.data();
+            currentSuccessOrder = { ...order, createdAt: order.createdAt || currentSuccessOrder?.createdAt };
+            renderMemoButton(currentSuccessOrder, orderRef.id, "successMemoActions");
             const originalTotal = Number(order.originalTotal ?? totals.originalTotal);
             const sellingTotal = Number(order.subtotal ?? totals.sellingTotal);
             const productDiscount = Number(order.productDiscountTotal ?? Math.max(0, originalTotal - sellingTotal));
@@ -751,6 +952,17 @@ async function submitOrder() {
 $("homeButton").addEventListener("click", () => {
     location.href = "product1.html";
 });
+
+// ডান পাশের স্থায়ী Home বাটন মূল index.html পেজে নিয়ে যাবে।
+$("floatingHomeButton").addEventListener("click", () => {
+    location.href = "index.html";
+});
+renderSavedOrders();
+// নম্বর ইনপুটে কেবল ১১ ডিজিট রাখা হয়; বাংলা ডিজিটও গ্রহণযোগ্য।
+["customerPhone","historyPhone"].forEach(id => $(id)?.addEventListener("input", event => {
+    const normalized = normalizePhone(event.target.value).slice(0,11);
+    event.target.value = normalized;
+}));
 
 updateCartCount();
 loadProducts();
