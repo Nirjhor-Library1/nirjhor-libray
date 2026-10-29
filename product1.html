@@ -106,6 +106,11 @@ main{width:94%}
 .summary-total{font-size:18px}
 }
 
+
+.product-tools{display:grid;grid-template-columns:minmax(0,1fr) minmax(240px,.8fr);gap:14px;align-items:start;margin:0 0 20px;padding:15px;background:#fff;border:1px solid #d5e7fb;border-radius:16px;box-shadow:0 4px 16px #23569112;position:relative;z-index:20}
+.search-wrap,.sort-wrap{min-width:0;position:relative}.product-tools label{display:block;font-weight:700;color:#0755b5;margin-bottom:8px}.product-tools input,.product-tools select{width:100%;min-height:46px;padding:10px 12px;border:1px solid #b9cde5;border-radius:10px;background:#fff;color:#24344d;font:inherit;outline:none}.product-tools input:focus,.product-tools select:focus{border-color:#0879d9;box-shadow:0 0 0 3px #0879d91c}.product-suggestions{position:absolute;top:100%;left:0;right:0;max-height:280px;overflow:auto;background:#fff;border:1px solid #cbdcf0;border-radius:0 0 12px 12px;box-shadow:0 8px 20px #16385b24;z-index:200}.product-suggestion{display:block;width:100%;text-align:left;padding:11px 12px;border:0;border-bottom:1px solid #edf2f8;background:#fff;color:#24344d;font:inherit;cursor:pointer}.product-suggestion:hover,.product-suggestion:focus{background:#edf6ff;color:#0755b5}.suggestion-id{display:block;color:#718198;font-size:12px;margin-top:3px}.search-empty{padding:12px;color:#718198;font-size:13px}
+@media(max-width:600px){.product-tools{grid-template-columns:1fr;gap:12px;padding:12px;margin-bottom:14px}.product-tools input,.product-tools select{min-height:44px}}
+
 </style>
 </head>
 
@@ -126,6 +131,24 @@ main{width:94%}
     <button class="secondary-button back-button" id="backToProductsButton" style="display:none">← পণ্যের পেজে ফিরে যান</button>
     <div id="loading" class="loading">পণ্য লোড হচ্ছে...</div>
     <div id="message" class="message" style="display:none"></div>
+    <section id="productTools" class="product-tools" style="display:none" aria-label="পণ্য খোঁজা ও সাজানো">
+        <div class="search-wrap">
+            <label for="productSearch">🔎 পণ্য খুঁজুন (নাম বা আইডি)</label>
+            <input id="productSearch" type="search" autocomplete="off" placeholder="পণ্যের নাম বা আইডি লিখুন..." aria-autocomplete="list" aria-controls="productSuggestions">
+            <div id="productSuggestions" class="product-suggestions" role="listbox" style="display:none"></div>
+        </div>
+        <div class="sort-wrap">
+            <label for="productSort">↕ পণ্য সাজান</label>
+            <select id="productSort">
+                <option value="az">A–Z (নাম অনুযায়ী)</option>
+                <option value="za">Z–A (নাম অনুযায়ী)</option>
+                <option value="priceLow">কম মূল্য থেকে বেশি মূল্য</option>
+                <option value="priceHigh">বেশি মূল্য থেকে কম মূল্য</option>
+                <option value="stockLow">কম স্টক থেকে বেশি স্টক</option>
+                <option value="stockHigh">বেশি স্টক থেকে কম স্টক</option>
+            </select>
+        </div>
+    </section>
     <div id="productArea"></div>
 
     <div id="cartSection" class="cart-section">
@@ -229,6 +252,8 @@ const $ = id => document.getElementById(id);
 const loading = $("loading");
 const message = $("message");
 const productArea = $("productArea");
+const productTools = $("productTools");
+let allProducts = [];
 const cartSection = $("cartSection");
 const cartItems = $("cartItems");
 const cartSummary = $("cartSummary");
@@ -480,6 +505,7 @@ async function loadProducts() {
             ...s.data(),
             firestoreId: s.id
         }));
+        allProducts = products;
 
         loading.style.display = "none";
 
@@ -504,8 +530,9 @@ async function loadProducts() {
             return;
         }
 
+        productTools.style.display = "grid";
         productArea.classList.add("product-grid");
-        products.forEach(createProductCard);
+        renderProductList();
     } catch (error) {
         console.error(error);
         loading.style.display = "none";
@@ -536,6 +563,65 @@ document.addEventListener("click", event => {
     if (!main) return;
     main.src = thumb.src;
     gallery.querySelectorAll(".gallery-thumb").forEach(image => image.classList.toggle("active", image === thumb));
+});
+
+
+function normalizeSearchText(value) {
+    return String(value ?? "").trim().toLocaleLowerCase();
+}
+function renderProductList() {
+    const searchText = normalizeSearchText($("productSearch").value);
+    const sortMode = $("productSort").value;
+    let filtered = allProducts.filter(product => {
+        const name = normalizeSearchText(product.productName || "");
+        const id = normalizeSearchText(product.productId || product.firestoreId || "");
+        return !searchText || name.includes(searchText) || id.includes(searchText);
+    });
+    const nameCompare = (a,b) => String(a.productName || "").localeCompare(String(b.productName || ""), undefined, {sensitivity:"base", numeric:true});
+    filtered.sort((a,b) => {
+        if (sortMode === "az") return nameCompare(a,b);
+        if (sortMode === "za") return nameCompare(b,a);
+        if (sortMode === "priceLow") return Number(a.sellingPrice || 0) - Number(b.sellingPrice || 0) || nameCompare(a,b);
+        if (sortMode === "priceHigh") return Number(b.sellingPrice || 0) - Number(a.sellingPrice || 0) || nameCompare(a,b);
+        if (sortMode === "stockLow") return Number(a.stock || 0) - Number(b.stock || 0) || nameCompare(a,b);
+        if (sortMode === "stockHigh") return Number(b.stock || 0) - Number(a.stock || 0) || nameCompare(a,b);
+        return 0;
+    });
+    productArea.innerHTML = "";
+    if (!filtered.length) {
+        productArea.classList.remove("product-grid");
+        productArea.innerHTML = '<div class="message">আপনার খোঁজের সঙ্গে মেলে এমন কোনো পণ্য পাওয়া যায়নি।</div>';
+        return;
+    }
+    productArea.classList.add("product-grid");
+    filtered.forEach(createProductCard);
+}
+function renderProductSuggestions() {
+    const input = $("productSearch");
+    const box = $("productSuggestions");
+    const term = normalizeSearchText(input.value);
+    if (!term) { box.style.display = "none"; box.innerHTML = ""; return; }
+    const matches = allProducts.filter(product => {
+        const name = normalizeSearchText(product.productName || "");
+        const id = normalizeSearchText(product.productId || product.firestoreId || "");
+        return name.includes(term) || id.includes(term);
+    }).sort((a,b) => String(a.productName || "").localeCompare(String(b.productName || ""), undefined, {sensitivity:"base",numeric:true})).slice(0,10);
+    box.innerHTML = matches.length ? matches.map((product,index) => `<button type="button" class="product-suggestion" role="option" data-suggestion-index="${index}"><span>${escapeHTML(product.productName || "পণ্যের নাম নেই")}</span><span class="suggestion-id">আইডি: ${escapeHTML(product.productId || product.firestoreId || "—")}</span></button>`).join("") : '<div class="search-empty">মিল থাকা কোনো পণ্য পাওয়া যায়নি</div>';
+    box.style.display = "block";
+    box.querySelectorAll("[data-suggestion-index]").forEach((button,index) => button.addEventListener("click", () => {
+        input.value = matches[index].productName || String(matches[index].productId || matches[index].firestoreId || "");
+        box.style.display = "none";
+        renderProductList();
+    }));
+}
+$("productSearch").addEventListener("input", () => { renderProductSuggestions(); renderProductList(); });
+$("productSort").addEventListener("change", renderProductList);
+$("productSearch").addEventListener("keydown", event => {
+    if (event.key === "Escape") $("productSuggestions").style.display = "none";
+    if (event.key === "Enter") { event.preventDefault(); $("productSuggestions").style.display = "none"; renderProductList(); }
+});
+document.addEventListener("click", event => {
+    if (!event.target.closest(".search-wrap")) $("productSuggestions").style.display = "none";
 });
 
 function createProductCard(product) {
