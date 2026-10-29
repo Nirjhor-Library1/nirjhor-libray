@@ -21,6 +21,7 @@ main{width:94%;max-width:1000px;margin:25px auto 45px}
 #productArea.product-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;align-items:stretch}
 #productArea.product-grid .product-card{padding:14px;border-radius:16px;border:1px solid #b9dfff;background:linear-gradient(155deg,#ffffff 0%,#f1f8ff 58%,#fff2fb 100%);box-shadow:0 6px 20px #0874d625;margin:0;min-width:0;display:flex;flex-direction:column}
 #productArea.product-grid .product-image{height:170px;max-height:170px;width:100%;object-fit:contain;background:linear-gradient(135deg,#eaf6ff,#fff0fa);border-radius:12px;padding:6px}
+.product-gallery{width:100%;display:flex;flex-direction:column;gap:7px}.gallery-main-image{cursor:zoom-in}.gallery-thumbnails{display:flex;flex-wrap:wrap;justify-content:center;gap:6px}.gallery-thumb{width:52px;height:52px;object-fit:contain;border:2px solid #d7e3f0;border-radius:7px;background:#fff;padding:2px;cursor:pointer}.gallery-thumb.active{border-color:#0879d9;box-shadow:0 0 0 1px #0879d9}
 #productArea.product-grid .no-image{height:170px;min-height:170px;background:linear-gradient(135deg,#eaf6ff,#fff0fa)}
 #productArea.product-grid .product-name{font-size:18px;line-height:1.45;margin:12px 0 5px;overflow-wrap:anywhere}
 #productArea.product-grid .product-id{font-size:11px;margin-bottom:10px;overflow-wrap:anywhere}
@@ -93,6 +94,7 @@ main{width:94%}
 #productArea.product-grid{gap:10px}
 #productArea.product-grid .product-card{padding:9px;border-radius:12px}
 #productArea.product-grid .product-image,#productArea.product-grid .no-image{height:125px;max-height:125px;min-height:125px}
+#productArea.product-grid .gallery-thumb{width:35px;height:35px}
 #productArea.product-grid .product-name{font-size:15px;margin:9px 0 4px}
 #productArea.product-grid .product-id{font-size:10px;margin-bottom:7px}
 #productArea.product-grid .price-box{padding:8px}
@@ -517,10 +519,24 @@ function showMessage(text) {
 }
 
 function productImageHTML(product, className = "product-image") {
-    return product.image
-        ? `<img class="${className}" src="${escapeHTML(product.image)}" alt="${escapeHTML(product.productName || "পণ্য")}">`
-        : `<div class="no-image">ছবি নেই</div>`;
+    const primary = product.productImage || product.image || "";
+    const images = [...new Set([primary, ...(Array.isArray(product.images) ? product.images : [])].filter(Boolean))];
+    if (!images.length) return `<div class="no-image">ছবি নেই</div>`;
+    const alt = escapeHTML(product.productName || "পণ্য");
+    const main = `<img class="${className} gallery-main-image" src="${escapeHTML(images[0])}" alt="${alt}">`;
+    const thumbs = images.length > 1 ? `<div class="gallery-thumbnails">${images.map((src, index) => `<img class="gallery-thumb${index === 0 ? " active" : ""}" src="${escapeHTML(src)}" alt="${alt} - ছবি ${index + 1}" data-gallery-thumb>`).join("")}</div>` : "";
+    return `<div class="product-gallery">${main}${thumbs}</div>`;
 }
+
+document.addEventListener("click", event => {
+    const thumb = event.target.closest("img[data-gallery-thumb]");
+    if (!thumb) return;
+    const gallery = thumb.closest(".product-gallery");
+    const main = gallery?.querySelector(".gallery-main-image");
+    if (!main) return;
+    main.src = thumb.src;
+    gallery.querySelectorAll(".gallery-thumb").forEach(image => image.classList.toggle("active", image === thumb));
+});
 
 function createProductCard(product) {
     const card = document.createElement("div");
@@ -623,7 +639,7 @@ function addProductToCart(product, quantity) {
             productId: product.productId || product.firestoreId,
             firestoreId: product.firestoreId,
             productName: product.productName || "পণ্য",
-            image: product.image || "",
+            image: product.productImage || product.image || "",
             mrp: Number(product.mrp ?? product.sellingPrice ?? 0),
             productDiscount: Number(product.discount || 0),
             sellingPrice: Number(product.sellingPrice || 0),
