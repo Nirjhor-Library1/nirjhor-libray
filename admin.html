@@ -39,7 +39,7 @@ table{border-collapse:collapse;width:100%;min-width:700px}
 th,td{border:1px solid #dce2eb;padding:8px;text-align:left;vertical-align:top}
 th{background:#edf3fb}
 .table-wrap{overflow-x:auto}
-.product-image{max-width:65px;max-height:65px;object-fit:contain}
+.product-image{max-width:120px;max-height:120px;object-fit:contain;display:block;margin:8px 0}.additional-image-previews{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 14px}.additional-image-item{position:relative;border:1px solid #dce2eb;border-radius:7px;padding:4px;background:#fff}.additional-image-item img{width:76px;height:76px;object-fit:contain;display:block}.additional-image-item button{font-size:12px;padding:4px 6px;margin:4px 0 0;width:100%}
 .small{font-size:13px;color:#596579}
 .status{font-weight:bold}
 .order{border:1px solid #dce2eb;padding:14px;border-radius:8px;margin:12px 0;background:white}
@@ -168,9 +168,12 @@ th{background:#edf3fb}
         <input id="productId" placeholder="যেমন NL-0001" required>
         <label>পণ্যের নাম</label>
         <input id="productName" required>
-        <label>পণ্যের ছবি</label>
+        <label>প্রধান ছবি</label>
         <input id="productImage" type="file" accept="image/*">
-        <img id="imagePreview" class="product-image hidden" alt="Product preview">
+        <img id="imagePreview" class="product-image hidden" alt="প্রধান ছবির প্রিভিউ">
+        <label>অতিরিক্ত ছবি (একাধিক নির্বাচন করা যাবে)</label>
+        <input id="additionalImages" type="file" accept="image/*" multiple>
+        <div id="additionalImagePreviews" class="additional-image-previews"></div>
         <label>ক্রয়মূল্য (প্রতি পিস)</label>
         <input id="purchasePrice" type="number" min="0" step="0.01" required>
         <label>MRP / মূল দাম</label>
@@ -261,9 +264,10 @@ let products = [];
 let orders = [];
 let editingProductId = "";
 let selectedImage = "";
+let existingImages = [];
+let selectedAdditionalImages = [];
 let html5QrCode = null;
 let currentView = "home";
-let currentAdminName = "";
 
 const SESSION_KEY = "nirjhorAdminAuthTime";
 const SESSION_DURATION = 10 * 60 * 1000;
@@ -314,8 +318,6 @@ function showAdmin() {
 
 function lockAdmin() {
   sessionStorage.removeItem(SESSION_KEY);
-  sessionStorage.removeItem("nirjhorAdminName");
-  currentAdminName = "";
 
   $("adminSection").classList.add("hidden");
   $("loginSection").classList.remove("hidden");
@@ -338,8 +340,6 @@ async function loginAdmin() {
     return;
   }
 
-  currentAdminName = password === "Rakibul#1" ? "রাকিবুল" : password === "Kashem#1" ? "কাশেম" : "মোশার্ফ";
-  sessionStorage.setItem("nirjhorAdminName", currentAdminName);
   sessionStorage.setItem(SESSION_KEY, String(Date.now()));
   $("loginMessage").textContent = "";
   $("adminPassword").value = "";
@@ -378,7 +378,6 @@ $("headerHome").addEventListener("click", () => showView("home"));
 const savedSession = Number(sessionStorage.getItem(SESSION_KEY) || 0);
 
 if (savedSession && Date.now() - savedSession < SESSION_DURATION) {
-  currentAdminName = sessionStorage.getItem("nirjhorAdminName") || "";
   showAdmin();
   loadProducts()
     .then(loadOrders)
@@ -612,10 +611,31 @@ function compressImage(file) {
   });
 }
 
+function renderAdditionalImagePreviews() {
+  const holder = $("additionalImagePreviews");
+  const items = [
+    ...existingImages.map((src, index) => ({ src, type: "existing", index })),
+    ...selectedAdditionalImages.map((src, index) => ({ src, type: "new", index }))
+  ];
+  holder.innerHTML = items.map(item => `
+    <div class="additional-image-item">
+      <img src="${item.src}" alt="অতিরিক্ত ছবি">
+      <button type="button" class="danger" data-image-type="${item.type}" data-image-index="${item.index}">বাদ দিন</button>
+    </div>`).join("");
+}
+
+$("additionalImagePreviews").addEventListener("click", event => {
+  const button = event.target.closest("button[data-image-type]");
+  if (!button) return;
+  const index = Number(button.dataset.imageIndex);
+  if (button.dataset.imageType === "existing") existingImages.splice(index, 1);
+  else selectedAdditionalImages.splice(index, 1);
+  renderAdditionalImagePreviews();
+});
+
 $("productImage").addEventListener("change", async event => {
   const file = event.target.files[0];
   if (!file) return;
-
   try {
     selectedImage = await compressImage(file);
     $("imagePreview").src = selectedImage;
@@ -625,6 +645,19 @@ $("productImage").addEventListener("change", async event => {
     event.target.value = "";
     selectedImage = "";
   }
+});
+
+$("additionalImages").addEventListener("change", async event => {
+  const files = Array.from(event.target.files || []);
+  if (!files.length) return;
+  try {
+    const compressed = await Promise.all(files.map(file => compressImage(file)));
+    selectedAdditionalImages.push(...compressed.filter(Boolean));
+    renderAdditionalImagePreviews();
+  } catch (error) {
+    alert(error.message || "অতিরিক্ত ছবি প্রস্তুত করা যায়নি।");
+  }
+  event.target.value = "";
 });
 
 /* =====================================================
@@ -640,6 +673,10 @@ function resetProductForm() {
   $("imagePreview").classList.add("hidden");
   $("productImage").required = false;
   selectedImage = "";
+  existingImages = [];
+  selectedAdditionalImages = [];
+  $("additionalImages").value = "";
+  renderAdditionalImagePreviews();
   editingProductId = "";
   calculateSellingPrice();
 }
@@ -667,6 +704,10 @@ function editProduct(firestoreId) {
   $("stock").value = Number(product.stock || 0);
 
   selectedImage = product.productImage || product.image || "";
+  existingImages = Array.isArray(product.images) ? product.images.filter(image => image && image !== selectedImage) : [];
+  selectedAdditionalImages = [];
+  $("additionalImages").value = "";
+  renderAdditionalImagePreviews();
 
   if (selectedImage) {
     $("imagePreview").src = selectedImage;
@@ -727,18 +768,24 @@ $("productForm").addEventListener("submit", async event => {
 
   const oldProduct = products.find(item => item.firestoreId === firestoreId);
 
-  if (!oldProduct && !selectedImage) {
-    alert("নতুন পণ্যের ছবি নির্বাচন করুন।");
+  const productImage = selectedImage || oldProduct?.productImage || oldProduct?.image || "";
+  if (!productImage) {
+    alert("পণ্যের প্রধান ছবি নির্বাচন করুন।");
     return;
   }
-
-  const productImage = selectedImage || oldProduct?.productImage || oldProduct?.image || "";
+  const allImages = [...new Set([productImage, ...existingImages, ...selectedAdditionalImages].filter(Boolean))];
+  if (allImages.reduce((sum, image) => sum + image.length, 0) + productImage.length > 850000) {
+    alert("ছবিগুলোর মোট আকার বেশি হয়ে গেছে। কিছু ছবি বাদ দিন বা ছোট ছবি ব্যবহার করুন, নইলে Firebase-এ সংরক্ষণ হবে না।");
+    return;
+  }
   const sellingPrice = Math.max(0, mrp - discount);
 
   const productData = {
     productId,
     productName,
     productImage,
+    image: productImage,
+    images: allImages,
     purchasePrice,
     mrp,
     discount,
@@ -759,6 +806,8 @@ $("productForm").addEventListener("submit", async event => {
         productId,
         productName,
         productImage,
+        image: productImage,
+        images: allImages,
         mrp,
         discount,
         sellingPrice,
@@ -778,6 +827,8 @@ $("productForm").addEventListener("submit", async event => {
         firestoreId: newDoc.id,
         productName,
         productImage,
+        image: productImage,
+        images: allImages,
         mrp,
         discount,
         sellingPrice,
@@ -1168,16 +1219,7 @@ function itemPrice(item) {
 }
 
 function itemCost(item) {
-  const savedCost = Number(item.purchasePrice ?? item.costPrice);
-  if (Number.isFinite(savedCost) && savedCost >= 0 &&
-      (item.purchasePrice != null || item.costPrice != null)) return savedCost;
-
-  const key = String(itemProductId(item) || "");
-  const product = products.find(p =>
-    String(p.productId || "") === key ||
-    String(p.firestoreId || "") === key
-  );
-  return Math.max(0, Number(product?.purchasePrice || 0));
+  return Math.max(0, Number(item.purchasePrice ?? item.costPrice ?? 0));
 }
 
 function itemProductId(item) {
@@ -1203,7 +1245,7 @@ function orderSubtotal(order) {
 
 function orderExtraDiscount(order) {
   return Math.max(0, Number(
-    order.adminExtraDiscount ?? order.extraDiscount ?? order.additionalDiscount ?? order.discountAmount ?? 0
+    order.extraDiscount ?? order.additionalDiscount ?? order.discountAmount ?? 0
   ));
 }
 
@@ -1650,9 +1692,6 @@ async function confirmOrder(orderId) {
       transaction.update(orderRef, {
         status: "confirmed",
         orderStatus: "confirmed",
-        approvedByName: currentAdminName || "অ্যাডমিন",
-        confirmedByName: currentAdminName || "অ্যাডমিন",
-        adminName: currentAdminName || "অ্যাডমিন",
         confirmedAt: serverTimestamp(),
         updatedAt: serverTimestamp()
       });
